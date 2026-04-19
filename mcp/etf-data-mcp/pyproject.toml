@@ -1,0 +1,19 @@
+[project]
+name = "etf-data-mcp"
+version = "0.1.0"
+description = "MCP server voor ETF-metadata, filters en vergelijking"
+requires-python = ">=3.12"
+dependencies = [
+    "mcp>=1.0.0",
+    "pydantic>=2.6.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    "asyncpg>=0.29.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.scripts]
+serve = "etf_data_mcp.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

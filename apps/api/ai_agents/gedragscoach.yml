@@ -1,0 +1,16 @@
+name: gedragscoach
+version: "1.0"
+model: llama3
+temperature: 0.6
+max_tokens: 800
+system_prompt_ref: prompts/system/gedragscoach.txt
+preprompt_ref: prompts/preprompts/gedragscoach_v1.txt
+description: >
+  Detecteert gedragspatronen (FOMO, paniek, overtrading) bij beleggers
+  en reageert met empathische coaching zonder financieel advies te geven.
+capabilities:
+  - detect_fomo
+  - detect_panic_selling
+  - detect_overtrading
+  - generate_reflection_questions
+  - generate_motivational_closing

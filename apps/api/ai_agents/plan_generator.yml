@@ -1,0 +1,15 @@
+name: plan_generator
+version: "1.0"
+model: mistral
+temperature: 0.35
+max_tokens: 1500
+system_prompt_ref: prompts/system/plan_generator.txt
+preprompt_ref: prompts/preprompts/plan_generator_v1.txt
+description: >
+  Genereert een persoonlijk beleggingsplan op basis van profiel, gekozen ETF
+  en beleggingsdoel. Altijd met disclaimer. Nooit als financieel advies.
+capabilities:
+  - generate_investment_plan_text
+  - explain_plan_rationale
+  - add_risk_notes
+  - simulate_growth_narrative

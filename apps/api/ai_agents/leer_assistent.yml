@@ -1,0 +1,15 @@
+name: leer_assistent
+version: "1.0"
+model: llama3
+temperature: 0.5
+max_tokens: 1200
+system_prompt_ref: prompts/system/leer_assistent.txt
+preprompt_ref: prompts/preprompts/leer_assistent_v1.txt
+description: >
+  Legt beleggingsconcepten uit op het niveau van de gebruiker.
+  Gebruik analogieën en concrete voorbeelden. Geen jargon zonder uitleg.
+capabilities:
+  - explain_concept
+  - generate_quiz_question
+  - define_term
+  - give_real_world_example

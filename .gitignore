@@ -1,0 +1,15 @@
+.env
+.env.local
+__pycache__/
+*.py[cod]
+.venv/
+.uv/
+node_modules/
+.next/
+dist/
+*.egg-info/
+.DS_Store
+*.log
+postgres_data/
+cypress/videos/
+cypress/screenshots/

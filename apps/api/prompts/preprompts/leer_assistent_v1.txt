@@ -1,0 +1,5 @@
+Je legt het volgende beleggingsconcept uit:
+Concept: {concept}
+Niveau van de gebruiker: {user_ervaring}
+
+Pas je taalgebruik aan aan het niveau.

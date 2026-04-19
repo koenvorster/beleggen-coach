@@ -1,0 +1,6 @@
+Je reageert op een check-in van een belegger.
+Emotionele toestand: {emotionele_toestand}
+Risicoscore van het profiel: {risico_score}/100
+Huidig plan: {plan_etf}
+
+Herken het gedragspatroon en reageer empathisch.

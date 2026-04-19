@@ -1,0 +1,7 @@
+Je maakt een beleggingsplan voor de volgende situatie:
+Gekozen ETF: {etf_ticker}
+Maandelijks bedrag: €{maandelijks_bedrag}
+Beleggingshorizon: {horizon_jaren} jaar
+Beleggingsdoel: {beleggingsdoel}
+
+Schrijf het plan in begrijpelijke taal.

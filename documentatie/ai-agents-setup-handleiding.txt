@@ -1,0 +1,568 @@
+================================================================
+HOE JE EEN PROJECT OPZET MET AI AGENTS, WORKFLOWS EN COPILOT SKILLS
+Een stap-voor-stap handleiding op basis van de beleggingsapp
+================================================================
+
+Geschreven op basis van de opzet van Project_beleggen en VorstersNV.
+Bedoeld als herbruikbare gids voor elk nieuw project.
+
+----------------------------------------------------------------
+INLEIDING
+----------------------------------------------------------------
+
+In dit project werken twee soorten AI-assistenten samen:
+
+1. COPILOT DEVELOPMENT AGENTS
+   Dit zijn assistenten die jou als ontwikkelaar helpen tijdens
+   het bouwen van de applicatie. Ze kennen jouw codebase, jouw
+   domein en jouw stijlregels. Je roept ze aan via @naam in
+   GitHub Copilot Chat.
+
+2. RUNTIME OLLAMA AGENTS
+   Dit zijn assistenten die in de applicatie zelf draaien.
+   Eindgebruikers praten met deze agents via de app. Ze draaien
+   lokaal via Ollama (geen OpenAI of externe API vereist).
+
+Je hebt beide nodig voor een volledig AI-gedreven project.
+Hieronder staat hoe je elk onderdeel van nul opzet.
+
+
+================================================================
+DEEL 1 — COPILOT DEVELOPMENT AGENTS
+================================================================
+
+Dit zijn tekstbestanden (.agent.md) die je in je repository zet.
+GitHub Copilot leest ze automatisch en maakt de agents beschikbaar
+in Copilot Chat via @agentnaam.
+
+----------------------------------------------------------------
+STAP 1.1 — De map aanmaken
+----------------------------------------------------------------
+
+Maak in je project een map aan:
+
+    .github/
+    └── agents/
+
+Alle agent-bestanden komen hier.
+
+----------------------------------------------------------------
+STAP 1.2 — De instructies voor Copilot
+----------------------------------------------------------------
+
+Maak ook dit bestand aan:
+
+    .github/copilot-instructions.md
+
+Dit bestand vertelt Copilot over jouw project:
+- Welke tech stack je gebruikt
+- Welke stijlregels gelden
+- Welke agents beschikbaar zijn en wanneer je ze gebruikt
+- Juridische of domein-specifieke grenzen
+
+Voorbeeld structuur van copilot-instructions.md:
+
+    # Projectnaam — Copilot Instructions
+
+    ## Tech stack
+    - Backend: FastAPI + Python 3.12
+    - Frontend: Next.js 15 + TypeScript
+    - Database: PostgreSQL + Alembic
+
+    ## Coding standaarden
+    - Type hints verplicht
+    - Geen business logic in routers
+    - Async/await voor alle I/O
+
+    ## Agent fleet
+    | Agent         | Aanroep        | Wanneer gebruiken          |
+    |---------------|----------------|----------------------------|
+    | Architect     | @architect     | Nieuwe features ontwerpen  |
+    | Developer     | @developer     | Implementatie              |
+    | Test Engineer | @test-engineer | Tests schrijven            |
+
+Hoe specifieker dit bestand is, hoe beter de agents presteren.
+
+----------------------------------------------------------------
+STAP 1.3 — Een agent-bestand schrijven
+----------------------------------------------------------------
+
+Elk .agent.md bestand heeft dezelfde structuur:
+
+    ---
+    name: naam-van-agent
+    description: Korte omschrijving wat de agent doet
+    ---
+
+    # Naam Agent
+
+    ## Rol
+    Beschrijf in 2-3 zinnen wat de taak en persoonlijkheid
+    van deze agent is.
+
+    ## Domeinkennis
+    Geef de agent relevante kennis over jouw project.
+    Denk aan: domeinbegrippen, bounded contexts, regels.
+
+    ## Werkwijze
+    Beschrijf stap voor stap hoe de agent te werk gaat.
+    1. Analyseer de vraag
+    2. Controleer bestaande code
+    3. Genereer oplossing
+
+    ## Output format
+    Beschrijf hoe de output eruit moet zien.
+    Bijv: "Altijd met uitleg, dan code, dan tests"
+
+    ## Grenzen
+    Wat doet de agent NIET?
+    Bijv: "Schrijft geen migrations zonder expliciete opdracht"
+
+Sla op als: .github/agents/mijn-agent.agent.md
+
+----------------------------------------------------------------
+STAP 1.4 — Welke agents maak je aan?
+----------------------------------------------------------------
+
+Aanbevolen basisset voor elk project:
+
+WORKFLOW AGENTS (voor het bouwproces):
+- architect.agent.md       — Ontwerp en architectuurbeslissingen
+- developer.agent.md       — Implementatie (backend + frontend)
+- test-engineer.agent.md   — Testplan en testcode
+- code-reviewer.agent.md   — Code review voor merge
+- security-check.agent.md  — Beveiliging en privacy
+
+DOMEIN AGENTS (voor jouw specifieke vakgebied):
+- [domein]-expert.agent.md     — Kennis van jouw domein
+- compliance-check.agent.md    — Juridische/regelgeving grenzen
+- data-engineer.agent.md       — Database en data pipelines
+
+GEAVANCEERDE AGENTS (voor grotere projecten):
+- ddd-modeler.agent.md         — Domain-Driven Design modellering
+- playwright.agent.md          — End-to-end tests
+- regression-selector.agent.md — Welke tests herdraaien na wijziging
+- test-data-designer.agent.md  — Testdata en edge cases ontwerpen
+- domain-validator.agent.md    — Domeinregels valideren
+
+----------------------------------------------------------------
+STAP 1.5 — Hoe gebruik je de agents?
+----------------------------------------------------------------
+
+Open GitHub Copilot Chat in VS Code of in de browser.
+Type @ gevolgd door de naam van de agent.
+
+Voorbeelden:
+
+    @architect Ik wil een nieuwe feature bouwen voor gebruikersbeheer.
+    Welke bounded contexts en entities heb ik nodig?
+
+    @developer Implementeer de POST /api/v1/users endpoint
+    op basis van het UserProfile model in src/models/
+
+    @test-engineer Schrijf pytest tests voor de ai_router
+    inclusief mocks voor de Ollama client
+
+    @code-reviewer Review de laatste wijzigingen in ai_router.py
+    op clean code en SOLID principes
+
+De agents kennen jouw codebase en passen hun antwoord aan op
+jouw specifieke project.
+
+
+================================================================
+DEEL 2 — RUNTIME OLLAMA AI AGENTS
+================================================================
+
+Dit zijn agents die in de applicatie zelf draaien. Gebruikers
+van jouw app praten met deze agents. Ze draaien via Ollama op
+een lokale server (geen kosten, geen externe afhankelijkheid).
+
+----------------------------------------------------------------
+STAP 2.1 — Ollama installeren en modellen downloaden
+----------------------------------------------------------------
+
+Installeer Ollama op je systeem:
+    https://ollama.com/download
+
+Of via Docker (aanbevolen voor projectconsistentie):
+
+    docker pull ollama/ollama
+    docker run -d -p 11434:11434 -v ollama_data:/root/.ollama ollama/ollama
+
+Daarna de modellen downloaden:
+
+    ollama pull llama3     # Goed voor gesprekken en coaching
+    ollama pull mistral    # Goed voor analyses en plannen maken
+
+Controleer of Ollama werkt:
+
+    curl http://localhost:11434/api/tags
+
+----------------------------------------------------------------
+STAP 2.2 — De mappenstructuur aanmaken
+----------------------------------------------------------------
+
+Maak in je API-app de volgende structuur aan:
+
+    apps/api/
+    ├── ai_agents/           # YAML configuraties per agent
+    ├── prompts/
+    │   ├── system/          # System prompts (.txt)
+    │   └── preprompts/      # Preprompts per versie (.txt)
+    ├── logs/                # Interactie-logs per agent
+    │   └── .gitkeep
+    └── src/
+        └── ai/
+            ├── __init__.py
+            ├── client.py          # Ollama HTTP client
+            ├── agent_runner.py    # Laadt YAML + voert agents uit
+            ├── orchestrator.py    # Combineert agents in workflows
+            └── prompt_iterator.py # Feedback en versies bijhouden
+
+----------------------------------------------------------------
+STAP 2.3 — Een agent YAML configuratie schrijven
+----------------------------------------------------------------
+
+Maak voor elke agent een YAML bestand in ai_agents/:
+
+    # ai_agents/mijn_agent.yml
+
+    name: mijn_agent
+    description: Korte omschrijving van de agent
+    model: llama3
+    temperature: 0.7
+    max_tokens: 1024
+
+    system_prompt_ref: prompts/system/mijn_agent.txt
+    preprompt_ref: prompts/preprompts/mijn_agent_v1.txt
+
+    capabilities:
+      - Beschrijf wat de agent kan
+      - Nog een capability
+
+    evaluation:
+      feedback_loop: true
+      min_rating: 3
+
+Kies het model op basis van de taak:
+- llama3      → gesprekken, coaching, Q&A
+- mistral     → analyses, structuur, plannen
+
+Kies temperature op basis van creativiteit:
+- 0.3 - 0.5  → Feitelijk, consistent (analyses, plannen)
+- 0.5 - 0.7  → Gebalanceerd (uitleg, coaching)
+- 0.7 - 0.9  → Creatief (brainstorm, verhalen)
+
+----------------------------------------------------------------
+STAP 2.4 — De system prompt schrijven
+----------------------------------------------------------------
+
+Maak prompts/system/mijn_agent.txt aan.
+Dit is de "persoonlijkheid" van de agent — altijd aanwezig
+bij elke interactie.
+
+Goede system prompt bevat:
+1. De rol en persoonlijkheid van de agent
+2. Wat de agent WEL doet
+3. Wat de agent NIET doet (grenzen)
+4. Taal en toon (formeel/informeel, doelgroep)
+5. Format instructies
+
+Voorbeeld:
+
+    Je bent een vriendelijke leerassistent die beleggingsconcepten
+    uitlegt aan mensen zonder financiële achtergrond.
+
+    Jouw stijl:
+    - Gebruik eenvoudige Nederlandse taal
+    - Vergelijk abstracte concepten met alledaagse situaties
+    - Eindig elke uitleg met een concrete vervolgstap
+
+    Je geeft GEEN financieel advies. Je zegt nooit "koop" of
+    "verkoop". Je bent een educator, geen adviseur.
+
+----------------------------------------------------------------
+STAP 2.5 — De preprompt schrijven
+----------------------------------------------------------------
+
+Maak prompts/preprompts/mijn_agent_v1.txt aan.
+Dit is context die bij elke aanroep meegegeven wordt —
+aanvulling op de system prompt, specifiek voor de taak.
+
+Voorbeeld:
+
+    Taak: Leg het volgende beleggingsconcept uit aan de gebruiker.
+    Stem je uitleg af op hun ervaringsniveau.
+    Gebruik maximaal 3 alinea's.
+    Eindig met: "Wil je meer weten over [concept]?"
+
+De "v1" in de naam staat voor versie 1. Je kunt later v2, v3
+aanmaken als je de prompts wil verbeteren op basis van feedback.
+
+----------------------------------------------------------------
+STAP 2.6 — De Python AI module bouwen
+----------------------------------------------------------------
+
+Je hebt 4 Python bestanden nodig in src/ai/:
+
+--- client.py ---
+De HTTP client die met Ollama communiceert.
+Bevat methodes: generate(), chat(), chat_stream(), is_available()
+
+Kernprincipe: één singleton client per applicatie.
+Gebruik httpx.AsyncClient voor async HTTP calls.
+
+--- agent_runner.py ---
+Laadt de YAML configuraties en voert agents uit.
+Combineert: system prompt + preprompt + gebruikersinput.
+Logt elke aanroep voor latere analyse.
+
+Kernprincipe: padresolutie altijd via Path(__file__).parent
+zodat het werkt ongeacht vanwaar je de app start.
+
+--- orchestrator.py ---
+Combineert meerdere agents in een workflow.
+Bijv: eerst profiel ophalen, dan agent aanroepen, dan resultaat
+opslaan — dat is één workflow.
+
+Definieer één methode per workflow:
+    async def run_coaching_workflow(user_id, ...)
+    async def run_plan_workflow(user_id, etf, ...)
+
+--- prompt_iterator.py ---
+Slaat elke interactie op als JSON in logs/.
+Verwerkt feedback (1-5 sterren) per interactie.
+Analyseert feedback om slechte prompts te identificeren.
+
+----------------------------------------------------------------
+STAP 2.7 — FastAPI endpoints aanmaken
+----------------------------------------------------------------
+
+Maak src/routers/ai_router.py aan met endpoints:
+
+    GET  /ai/health          → Is Ollama beschikbaar? Welke modellen?
+    POST /ai/chat            → Stuur bericht naar een agent
+    POST /ai/[workflow-naam] → Start een specifieke workflow
+    POST /ai/feedback        → Geef feedback op een interactie
+
+Elke endpoint:
+1. Valideert input met Pydantic schema
+2. Roept de orchestrator aan (niet direct de agent)
+3. Vangt Ollama-fouten op en geeft 503 terug
+4. Logt de interactie via prompt_iterator
+
+Registreer de router in main.py:
+    app.include_router(ai_router, prefix="/api/v1")
+
+En start de Ollama client bij opstarten:
+    @app.on_event("startup")
+    async def startup():
+        client = OllamaClient(base_url=settings.ollama_base_url)
+        # sla op als singleton
+
+----------------------------------------------------------------
+STAP 2.8 — Omgevingsvariabelen instellen
+----------------------------------------------------------------
+
+Voeg toe aan .env.example (en je eigen .env):
+
+    OLLAMA_BASE_URL=http://localhost:11434
+    OLLAMA_DEFAULT_MODEL=llama3
+    OLLAMA_TIMEOUT=120
+
+En verwerk in config.py (Pydantic Settings):
+
+    class Settings(BaseSettings):
+        ollama_base_url: str = "http://localhost:11434"
+        ollama_default_model: str = "llama3"
+        ollama_timeout: float = 120.0
+
+----------------------------------------------------------------
+STAP 2.9 — Docker Compose uitbreiden
+----------------------------------------------------------------
+
+Voeg de Ollama service toe aan docker-compose.yml:
+
+    ollama:
+      image: ollama/ollama
+      ports:
+        - "11434:11434"
+      volumes:
+        - ollama_data:/root/.ollama
+
+    volumes:
+      ollama_data:
+
+Na docker-compose up moet je nog de modellen pullen:
+
+    docker exec <container-naam> ollama pull llama3
+    docker exec <container-naam> ollama pull mistral
+
+
+================================================================
+DEEL 3 — HET FEEDBACK SYSTEEM
+================================================================
+
+Het feedback systeem zorgt dat je prompts over tijd beter worden.
+
+Elke interactie wordt opgeslagen in logs/<agent_naam>/<id>.json:
+
+    {
+      "id": "gedragscoach_2026-04-19T...",
+      "timestamp": "2026-04-19T17:00:00Z",
+      "prompt_version": "1.0",
+      "user_input": "Ik wil alles verkopen",
+      "agent_output": "Dat klinkt spannend...",
+      "feedback": null
+    }
+
+Na het gesprek kan de gebruiker 1-5 sterren geven via:
+    POST /api/v1/ai/feedback
+
+Interacties met score 1-2 zijn kandidaten voor prompt-verbetering.
+Analyseer ze via prompt_iterator.analyse_feedback().
+
+Als je de prompt verbetert:
+1. Maak mijn_agent_v2.txt aan in preprompts/
+2. Update de YAML config: preprompt_ref: ...v2.txt
+3. De nieuwe versie wordt automatisch gelogd
+
+
+================================================================
+DEEL 4 — AANBEVOLEN WERKVOLGORDE VOOR EEN NIEUW PROJECT
+================================================================
+
+Fase 1 — Project setup (dag 1)
+    1. Maak .github/agents/ map aan
+    2. Schrijf copilot-instructions.md met je tech stack
+    3. Maak architect.agent.md en developer.agent.md aan
+    4. Gebruik @architect voor je eerste architectuurbeslissingen
+
+Fase 2 — AI module opzetten (dag 2-3)
+    5. Maak de mappenstructuur voor AI aan
+    6. Kopieer client.py, agent_runner.py, prompt_iterator.py
+       uit dit project als startpunt
+    7. Pas aan voor jouw domein
+    8. Schrijf je eerste agent YAML + system prompt
+
+Fase 3 — Agents verfijnen (doorlopend)
+    9. Voeg domain-specifieke agents toe naar behoefte
+    10. Test elke agent handmatig via de /ai/health endpoint
+    11. Verzamel feedback en verbeter prompts iteratief
+
+Fase 4 — Volledige fleet (bij groeiend project)
+    12. Voeg test-engineer, code-reviewer, security-check toe
+    13. Voeg geavanceerde agents toe (ddd-modeler, playwright, ...)
+    14. Update copilot-instructions.md met het volledige overzicht
+
+
+================================================================
+DEEL 5 — CHECKLIST VOOR EEN NIEUW PROJECT
+================================================================
+
+COPILOT AGENTS:
+[ ] .github/agents/ map aangemaakt
+[ ] copilot-instructions.md aangemaakt met tech stack + regels
+[ ] architect.agent.md aangemaakt
+[ ] developer.agent.md aangemaakt
+[ ] test-engineer.agent.md aangemaakt
+[ ] code-reviewer.agent.md aangemaakt
+[ ] security-check.agent.md aangemaakt
+[ ] Domein-specifieke agents aangemaakt
+
+RUNTIME AI MODULE:
+[ ] ai_agents/ map aangemaakt
+[ ] prompts/system/ map aangemaakt
+[ ] prompts/preprompts/ map aangemaakt
+[ ] logs/.gitkeep aangemaakt
+[ ] src/ai/__init__.py aangemaakt
+[ ] src/ai/client.py aangemaakt
+[ ] src/ai/agent_runner.py aangemaakt
+[ ] src/ai/orchestrator.py aangemaakt
+[ ] src/ai/prompt_iterator.py aangemaakt
+[ ] YAML config per agent aangemaakt
+[ ] System prompt per agent aangemaakt (.txt)
+[ ] Preprompt v1 per agent aangemaakt (.txt)
+
+FASTAPI INTEGRATIE:
+[ ] src/routers/ai_router.py aangemaakt
+[ ] ai_router geregistreerd in main.py
+[ ] config.py uitgebreid met Ollama settings
+[ ] pyyaml toegevoegd aan dependencies (pyproject.toml)
+[ ] uv sync / pip install uitgevoerd
+
+INFRA:
+[ ] docker-compose.yml Ollama service toegevoegd
+[ ] ollama_data volume toegevoegd
+[ ] .env.example uitgebreid met OLLAMA_* variabelen
+[ ] Modellen gepulled: ollama pull llama3 + mistral
+
+VERIFICATIE:
+[ ] GET /api/v1/ai/health geeft {"ollama_available": true}
+[ ] POST /api/v1/ai/chat geeft antwoord van agent
+[ ] Logs worden aangemaakt in logs/<agent_naam>/
+[ ] Imports werken: python -c "from src.ai import get_runner"
+
+
+================================================================
+TIPS UIT DE PRAKTIJK
+================================================================
+
+TIP 1 — Start klein
+Begin met 2-3 agents, niet alle 17 tegelijk.
+Een goede architect-agent en developer-agent geven je al enorm
+veel waarde vanaf dag één.
+
+TIP 2 — Geef agents een sterke identiteit
+Hoe specifieker de persoonlijkheid en grenzen van een agent,
+hoe beter hij presteert. "Je bent een expert in..." werkt
+beter dan een generieke beschrijving.
+
+TIP 3 — Bewaar mislukte interacties
+Slechte antwoorden zijn je beste leermateriaal. Het feedback-
+systeem (1-5 sterren + log) zorgt dat je systematisch kunt
+verbeteren in plaats van ad-hoc.
+
+TIP 4 — Gebruik modellen doelgericht
+llama3 voor gesprekken en coaching (warmer, vloeiender)
+mistral voor structuur en analyses (preciezer, compacter)
+Experimenteer met temperature: begin bij 0.5 en pas aan.
+
+TIP 5 — Houd system prompts kort en krachtig
+Lange system prompts worden vaak deels genegeerd.
+Liever 10 krachtige regels dan 50 vage zinnen.
+
+TIP 6 — Versioneer je prompts
+Gebruik v1, v2, v3 in de bestandsnamen.
+Verwijder nooit een oude versie — je wil kunnen terugkijken
+wat beter of slechter werkte en waarom.
+
+TIP 7 — Test altijd met echte gebruikersvragen
+Bedenk 10 vragen die een echte gebruiker zou stellen.
+Test elke agent op die vragen voordat je live gaat.
+Schrijf de slechte antwoorden op — dat zijn je v2 verbeterpunten.
+
+
+================================================================
+BRONNEN EN REFERENTIES
+================================================================
+
+Ollama documentatie:
+    https://ollama.com/docs
+
+Beschikbare modellen:
+    https://ollama.com/library
+
+GitHub Copilot custom agents:
+    https://docs.github.com/copilot/customizing-copilot/using-copilot-extensions
+
+FastAPI documentatie:
+    https://fastapi.tiangolo.com
+
+Pydantic Settings:
+    https://docs.pydantic.dev/latest/concepts/pydantic_settings/
+
+================================================================
+EINDE VAN DE HANDLEIDING
+================================================================

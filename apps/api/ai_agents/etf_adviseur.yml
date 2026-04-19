@@ -1,0 +1,15 @@
+name: etf_adviseur
+version: "1.0"
+model: mistral
+temperature: 0.4
+max_tokens: 1024
+system_prompt_ref: prompts/system/etf_adviseur.txt
+preprompt_ref: prompts/preprompts/etf_adviseur_v1.txt
+description: >
+  Genereert begrijpelijke, niet-commerciële uitleg van ETFs voor beginners.
+  Vertaalt scores naar mensentaal. Voegt altijd een disclaimer toe.
+capabilities:
+  - explain_etf_in_plain_language
+  - translate_score_to_human_text
+  - compare_etfs
+  - generate_disclaimer

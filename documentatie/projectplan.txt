@@ -1,0 +1,319 @@
+﻿BeleggenCoach -- Projectoverzicht & Architectuurplan
+Laatste update: 19 april 2026 (Next Level Update)
+================================================================================
+
+WAT IS DIT PROJECT?
+--------------------------------------------------------------------------------
+BeleggenCoach is een AI-beleggingscoach voor Belgische beginners zonder
+beleggingservaring. Doel: ETF-keuze begrijpbaar maken, een persoonlijk plan
+opstellen en gedragscoaching bieden op eigen tempo.
+
+JURIDISCH: dit is GEEN gereguleerd financieel advies (MiFID II). Puur educatie,
+vergelijking en simulatie. Elke pagina met ETF-informatie draagt een disclaimer.
+
+
+ARCHITECTUURVISIE (DDD + HEXAGONAAL)
+--------------------------------------------------------------------------------
+De app volgt Domain-Driven Design met hexagonale lagen:
+
+  Domeinlaag     -- pure Python/TS logic, geen infra-imports
+       omhoog
+  Applicatielaag -- use cases, event-orchestratie, MCP-aanroepen
+       omhoog
+  Infrastructuurlaag -- DB (SQLAlchemy), Redis, externe APIs, MCP clients
+       omhoog
+  Interface-laag -- FastAPI routers, Next.js pages
+
+MCP servers zijn Open Host Services: publieke contracten voor Copilot agents.
+Externe integraties (Keycloak (self-hosted), OpenAI, yfinance) zitten achter een ACL.
+
+BOUNDED CONTEXTS
+--------------------------------------------------------------------------------
+
+  Context             MCP Server              Verantwoordelijkheid
+  ------------------  ----------------------  --------------------------------
+  InvestorProfile     investor-profile-mcp    Gebruiker, doelen, risicotolerantie
+  ETFCatalog          etf-data-mcp            ETF-metadata, scoring, vergelijking
+  MarketData          market-data-mcp         Koershistoriek, volatiliteit, prijzen
+  Portfolio           portfolio-plan-mcp      Posities, P&L, allocatie
+  Plan                portfolio-plan-mcp      Beleggingsplan, simulaties
+  BehaviorCoaching    behavior-coach-mcp      Check-ins, gedragspatronen, nudges
+  Learning            learning-content-mcp    Lessen, begrippen, quizjes
+
+DOMEINEVENTS (te implementeren)
+  ProfileCreated      CheckinRecorded         PlanUpdated         PositionAdded
+
+
+TECH STACK
+--------------------------------------------------------------------------------
+
+  Frontend   : Next.js 15, React 19, TypeScript strict, Tailwind CSS
+  Backend    : Python 3.12, FastAPI, SQLAlchemy async, Alembic, Pydantic v2
+  Database   : PostgreSQL 16 (Docker), Redis (cache + chat memory)
+  MCP        : Python mcp SDK, stdio protocol -- output altijd { success, data, error }
+  Auth       : Keycloak (self-hosted, optioneel, conditioneel via env var)
+  AI         : OpenAI GPT-4o-mini (chat, met mock fallback)
+  Marktdata  : yfinance ACL adapter (gepland)
+  Monorepo   : pnpm workspaces (frontend) + uv (Python)
+
+
+SYSTEEMDIAGRAM
+--------------------------------------------------------------------------------
+
+  +------------------------------------------------------------------+
+  |                      Next.js Frontend                           |
+  |  16 pagina's: /, /onboarding, /dashboard, /etfs, /etfs/compare  |
+  |  /plan, /learn, /checkin, /analytics, /bronnen, /chat,          |
+  |  /disclaimer, /portfolio, /sign-in, /sign-up + /api/chat        |
+  +-----------------------------+------------------------------------+
+                                | REST/JSON + SSE (streaming)
+  +-----------------------------v------------------------------------+
+  |                     FastAPI Backend                             |
+  |  routers: onboarding (actief) | etfs, plans, checkins,         |
+  |           portfolio, chat (gepland)                             |
+  |  middleware: Keycloak JWT verificatie (geïmplementeerd)               |
+  +----------+-------------------------------------+----------------+
+             | SQLAlchemy async                   | aioredis
+  +----------v----------+               +---------v---------+
+  |    PostgreSQL 16     |               |       Redis       |
+  |  users               |               |  ETF cache (1u)  |
+  |  investor_profiles   |               |  chat memory     |
+  |  plans               |               |  (24u, 20 msgs)  |
+  |  checkins            |               +-------------------+
+  |  portfolio_positions |
+  +---------------------+
+             |
+  +----------v--------------------------------------------------+
+  |              MCP Servers (6x, via stdio)                   |
+  |  investor-profile-mcp  etf-data-mcp  market-data-mcp      |
+  |  portfolio-plan-mcp    behavior-coach-mcp  learning-mcp   |
+  +-------------------------------------------------------------+
+             |
+  +----------v--------------------------------------------------+
+  |              Externe diensten (via ACL)                     |
+  |  Keycloak (self-hosted auth)  OpenAI API (chat)  yfinance (marktdata)  |
+  +-------------------------------------------------------------+
+
+
+FRONTEND PAGINA'S -- STATUS
+--------------------------------------------------------------------------------
+
+  Route              Status  Beschrijving
+  -----------------  ------  --------------------------------------------------
+  /                  [DONE]  Homepage: hero, 3 features, CTA strip
+  /onboarding        [DONE]  4-staps wizard: doel->inleg->tijdshorizon->risico
+  /dashboard         [DONE]  Stats, ETF-suggestie, leertip, gedragstip
+  /etfs              [DONE]  Verkenner: zoek, filter op categorie, vergelijk 3
+  /etfs/compare      [DONE]  Vergelijkingstabel max 3 ETFs, scores, disclaimer
+  /plan              [DONE]  Groeisimulatie Recharts: 3 scenario's (3/6/9%)
+  /learn             [DONE]  10 conceptkaarten, 3-vraag quiz, Belgische context
+  /checkin           [DONE]  4-staps maandcheck: gevoel -> intent -> coach
+  /analytics         [DONE]  3 tabs: groei (LineChart), ETF-scores, gedrag
+  /bronnen           [DONE]  Marktdata, tools, brokervergelijking, boeken
+  /chat              [DONE]  AI chatinterface met streaming + disclaimer
+  /api/chat          [DONE]  Next.js Edge route: OpenAI GPT-4o-mini of mock
+  /disclaimer        [DONE]  Volledige juridische disclaimer (MiFID II, GDPR)
+  /portfolio         [DONE]  Posities, P&L, PieChart (localStorage)
+  /sign-in           [DONE]  Keycloak sign-in via next-auth (conditioneel actief)
+  /sign-up           [DONE]  Keycloak sign-up via next-auth (conditioneel actief)
+
+  AUTHENTICATIE: Keycloak (self-hosted) optioneel via KEYCLOAK_CLIENT_ID + KEYCLOAK_CLIENT_SECRET.
+                 AuthProvider (SessionProvider) + UserAuthButton in layout.tsx.
+
+  OPENSTAAND: alle pagina's gebruiken localStorage + mock-etfs.ts.
+              Echte API-koppeling is de grootste openstaande taak.
+
+
+BACKEND (apps/api) -- HUIDIGE STATUS
+--------------------------------------------------------------------------------
+
+  Onderdeel               Status   Details
+  ----------------------  -------  ---------------------------------------------
+  FastAPI app + CORS      [DONE]   CORS localhost:3000, /health endpoint
+  SQLAlchemy config       [DONE]   Async engine, session factory, Base
+  DB modellen             [DONE]   User, InvestorProfile, Plan, CheckIn
+  Pydantic schemas        [DONE]   Volledige req/resp schemas (Pydantic v2)
+  Onboarding router       [DONE]   POST /start, PUT /{id}/profile, GET /{id}/summary
+  Alembic setup           [DONE]   Config aanwezig, migraties NOG NIET uitgevoerd
+  ETFs router             [TODO]   GET /etfs, GET /etfs/{isin}
+  Plans router            [TODO]   POST /users/{id}/plans, GET /users/{id}/plans
+  CheckIns router         [TODO]   POST /users/{id}/checkins, GET /users/{id}/checkins
+  Portfolio router        [TODO]   Nieuw model: portfolio_positions tabel
+  Chat router             [TODO]   POST /chat/message (SSE streaming, met profiel)
+  Keycloak JWT middleware  [DONE]  verify_token dependency + keycloak_user_id kolom
+
+
+MCP SERVERS -- STATUS
+--------------------------------------------------------------------------------
+
+  Server                  Status   Tools
+  ----------------------  -------  ---------------------------------------------
+  investor-profile-mcp    [DONE]   create_profile, calculate_capacity,
+                                   risk_summary, update_goal
+
+  etf-data-mcp            [DONE]   search_etfs, get_etf_details, compare_etfs,
+                                   filter_etfs_for_beginner
+                          [TODO+]  get_top3_for_profile (nieuw te bouwen)
+
+  behavior-coach-mcp      [DONE]   detect_fomo_pattern, detect_overtrading_risk,
+                                   generate_reflection_prompt,
+                                   monthly_checkin_summary
+
+  portfolio-plan-mcp      [DONE]   generate_beginner_plan, simulate_monthly_investing,
+                                   suggest_allocation, check_diversification
+
+  learning-content-mcp    [DONE]   tools aanwezig
+
+  market-data-mcp         [DONE]   tools aanwezig
+                          [TODO+]  yfinance ACL adapter koppelen
+
+
+GEORDENDE BACKLOG (6 fasen)
+--------------------------------------------------------------------------------
+
+FASE 1: Database & Backend basis
+  Prioriteit: KRITISCH -- blokkeert alles
+
+  [TODO] 1a. Alembic migraties uitvoeren
+         cd apps/api
+         uv run alembic revision --autogenerate -m "initial"
+         uv run alembic upgrade head
+         Vereist: docker-compose up db
+
+  [TODO] 1b. ETFs router implementeren
+         GET /etfs   (filters: categorie, risico, ter_max)
+         GET /etfs/{isin}
+         Service roept etf-data-mcp aan
+         Voeg apps/api/src/routers/etfs.py toe
+
+  [TODO] 1c. Plans router implementeren
+         POST /users/{id}/plans
+         GET  /users/{id}/plans
+         Service roept portfolio-plan-mcp aan voor suggestie
+         Voeg apps/api/src/routers/plans.py toe
+
+  [TODO] 1d. CheckIns router implementeren
+         POST /users/{id}/checkins  (uniek per user+month)
+         GET  /users/{id}/checkins
+         Service roept behavior-coach-mcp aan voor coach_response
+
+  [TODO] 1e. Portfolio router + Position model
+         Nieuw model: portfolio_positions (id, user_id, etf_isin,
+         shares, buy_price, buy_date)
+         GET/POST/DELETE /users/{id}/positions
+
+FASE 2: Frontend koppelen
+  Prioriteit: HOOG -- maakt de app echt
+
+  [TODO] 2. Echte API-koppeling frontend
+         Vervang localStorage + mock-etfs.ts door echte API calls
+         via apps/web/src/lib/api.ts (functies al aanwezig)
+         Onboarding, dashboard, plan, checkin, portfolio
+
+FASE 3: DDD herstructurering
+  Prioriteit: MIDDEL -- verhoogt onderhoudbaarheid
+
+  [TODO] 3a. Hexagonale lagenstructuur
+         apps/api/src/domain/       -- pure business logic
+         apps/api/src/application/  -- use cases, event bus
+         apps/api/src/infrastructure/ -- DB repos, externe APIs
+         Geen infra-imports in domain laag
+
+  [TODO] 3b. Domeinevents implementeren
+         ProfileCreated, PlanUpdated, CheckinRecorded, PositionAdded
+         Eenvoudige in-memory event bus (later Redis Pub/Sub)
+
+  [TODO] 3c. Value Objects
+         RiskScore, Money (EUR), ISIN (gevalideerd), HorizonYears
+         Pydantic frozen dataclasses in domain laag
+
+FASE 4: Marktdata & AI verbeteren
+  Prioriteit: MIDDEL -- voegt echte intelligentie toe
+
+  [TODO] 4a. Redis caching voor ETF data
+         ETF-lijst: TTL 1 uur
+         ETF-details: TTL 6 uur
+         aioredis in infrastructure laag
+
+  [TODO] 4b. yfinance ACL adapter
+         Interface: get_price(isin), get_history(isin, period)
+         Redis cache TTL 15 minuten
+         apps/api/src/infrastructure/market_data/
+
+  [TODO] 4c. get_top3_for_profile tool in etf-data-mcp
+         Input: risk_tolerance, horizon_years, monthly_budget
+         Output: top 3 ETFs met mensentaal-uitleg + score
+         JSON Schema verplicht op input en output
+
+  [TODO] 4d. AI Chat naar FastAPI verplaatsen
+         POST /chat/message (SSE streaming)
+         Injecteer: user profiel + top3 ETFs als systeemcontext
+         Voordeel vs Next.js Edge: toegang tot PostgreSQL + Redis
+
+  [TODO] 4e. Redis chat memory
+         key=chat:{user_id}, value=lijst {role, content, timestamp}
+         Sliding window max 20 messages, TTL 24 uur
+
+FASE 5: Auth verbinding
+  Prioriteit: MIDDEL -- nodig voor productie
+
+  [DONE] 5. Keycloak JWT verificatie middleware FastAPI
+         verify_token() als FastAPI Depends (auth uitgeschakeld in dev)
+         keycloak_user_id kolom toegevoegd aan users tabel (migratie 002)
+         Map keycloak_user_id -> internal UUID
+         Beveilig alle routes behalve /health en /onboarding/start
+
+FASE 6: Kwaliteit & Observability
+  Prioriteit: LAAG voor MVP
+
+  [TODO] 6a. Cypress E2E tests
+         5+ spec files: onboarding, ETF compare, chat, portfolio, checkin
+         CI-integratie
+
+  [TODO] 6b. Observability
+         structlog voor FastAPI (gestructureerde JSON logging)
+         sentry-sdk voor backend + frontend
+         X-Request-ID correlation header
+         /health uitbreiden met DB + Redis status
+
+
+DATAFLOWS
+--------------------------------------------------------------------------------
+
+Onboarding (doelarchitectuur):
+  1. Frontend wizard  -->  POST /api/v1/onboarding/start    (user aanmaken)
+  2.                  -->  PUT  /api/v1/onboarding/{id}/profile  (profiel)
+  3. Backend valideert + slaat op in PostgreSQL
+  4. investor-profile-mcp  leest profiel -> berekent RiskScore value object
+  5. etf-data-mcp:get_top3_for_profile  -> top 3 ETFs
+  6. portfolio-plan-mcp    -> genereert eerste plan
+  7. Frontend toont op dashboard
+
+AI Chat (doelarchitectuur):
+  1. Frontend POST /api/v1/chat/message  {user_id, message}
+  2. FastAPI haalt user profiel uit PostgreSQL
+  3. Redis: laad chat history (max 20 msgs)
+  4. etf-data-mcp:get_top3_for_profile -> systeemcontext injecteren
+  5. OpenAI GPT-4o-mini stream response
+  6. Redis: sla nieuw bericht op
+  7. SSE stream terug naar frontend
+
+Check-in + Behavior Coaching:
+  1. Frontend POST /checkins  {invested, emotional_state, notes}
+  2. Event: CheckinRecorded
+  3. behavior-coach-mcp:detect_fomo_pattern  -> analyse
+  4. behavior-coach-mcp:monthly_checkin_summary -> coach_response
+  5. Opslaan in DB, terugsturen naar frontend
+
+
+KWALITEITSPOORTEN (architect-niveau)
+--------------------------------------------------------------------------------
+  - Geen directe verwijzingen tussen aggregates (alleen via ID)
+  - Domeinlaag heeft GEEN imports uit infrastructuurlaag
+  - Elke externe integratie (Keycloak (self-hosted), OpenAI, yfinance) zit achter een ACL
+  - Ubiquitous language consistent in code EN documentatie
+  - Alle MCP tools hebben JSON Schema op input EN output
+  - Scores altijd in mensentaal, nooit als kaal getal
+  - Geen "koop dit nu" taal -- altijd "past mogelijk bij jouw profiel omdat..."
+
+================================================================================

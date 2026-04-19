@@ -1,0 +1,8 @@
+Je legt de volgende ETF uit:
+Ticker: {etf_ticker}
+TER: {ter}%
+Aantal bedrijven in het fonds (spreiding): {spreiding}
+Beginner-score: {beginner_score}/100
+
+Schrijf een begrijpelijke uitleg voor iemand die nog nooit belegd heeft.
+Leg de score uit in mensentaal.
