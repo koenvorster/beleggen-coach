@@ -218,42 +218,31 @@ export const api = {
   /** Plan-eindpunten */
   plans: {
     create: (userId: string, plan: PlanCreate): Promise<Plan> =>
-      apiFetch<ApiResponse<Plan>>(`/users/${userId}/plans`, {
+      apiFetch<Plan>(`/users/${userId}/plans`, {
         method: "POST",
         body: JSON.stringify(plan),
-      }).then((r) => {
-        if (!r.data) throw new Error("Plan aanmaken mislukt");
-        return r.data;
       }),
 
     list: (userId: string): Promise<Plan[]> =>
-      apiFetch<ApiResponse<Plan[]>>(`/users/${userId}/plans`).then(
-        (r) => r.data ?? []
+      apiFetch<Plan[]>(`/users/${userId}/plans`).then(
+        (r) => Array.isArray(r) ? r : []
       ),
 
     get: (userId: string, planId: string): Promise<Plan> =>
-      apiFetch<ApiResponse<Plan>>(`/users/${userId}/plans/${planId}`).then(
-        (r) => {
-          if (!r.data) throw new Error(`Plan ${planId} niet gevonden`);
-          return r.data;
-        }
-      ),
+      apiFetch<Plan>(`/users/${userId}/plans/${planId}`),
   },
 
   /** Check-in eindpunten */
   checkins: {
     create: (userId: string, checkin: CheckInCreate): Promise<CheckIn> =>
-      apiFetch<ApiResponse<CheckIn>>(`/users/${userId}/checkins`, {
+      apiFetch<CheckIn>(`/users/${userId}/checkins`, {
         method: "POST",
         body: JSON.stringify(checkin),
-      }).then((r) => {
-        if (!r.data) throw new Error("Check-in opslaan mislukt");
-        return r.data;
       }),
 
     list: (userId: string): Promise<CheckIn[]> =>
-      apiFetch<ApiResponse<CheckIn[]>>(`/users/${userId}/checkins`).then(
-        (r) => r.data ?? []
+      apiFetch<CheckIn[]>(`/users/${userId}/checkins`).then(
+        (r) => Array.isArray(r) ? r : []
       ),
   },
 
@@ -270,25 +259,25 @@ export const api = {
   /** Portfolio-eindpunten */
   portfolio: {
     get: (userId: string): Promise<PortfolioPosition[]> =>
-      apiFetch<ApiResponse<PortfolioPosition[]>>(
-        `/users/${userId}/portfolio`
-      ).then((r) => r.data ?? []),
+      apiFetch<PortfolioPosition[]>(
+        `/users/${userId}/positions`
+      ).then((r) => Array.isArray(r) ? r : []),
 
     add: (
       userId: string,
       position: PortfolioPositionCreate
     ): Promise<PortfolioPosition> =>
-      apiFetch<ApiResponse<PortfolioPosition>>(
-        `/users/${userId}/portfolio`,
+      apiFetch<PortfolioPosition>(
+        `/users/${userId}/positions`,
         { method: "POST", body: JSON.stringify(position) }
       ).then((r) => {
-        if (!r.data) throw new Error("Positie toevoegen mislukt");
-        return r.data;
+        if (!r) throw new Error("Positie toevoegen mislukt");
+        return r;
       }),
 
     remove: (userId: string, positionId: string): Promise<void> =>
-      apiFetch<ApiResponse<null>>(
-        `/users/${userId}/portfolio/${positionId}`,
+      apiFetch<null>(
+        `/users/${userId}/positions/${positionId}`,
         { method: "DELETE" }
       ).then(() => undefined),
   },
