@@ -1,5 +1,5 @@
 """ETF service — business logic voor ETF-opvragen en -aanmaken."""
-import logging
+import structlog
 from typing import Optional
 
 from sqlalchemy import select
@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..models import ETF
 from ..schemas import ETFCreate
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 async def list_etfs(

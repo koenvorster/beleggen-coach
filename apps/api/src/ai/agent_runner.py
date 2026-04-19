@@ -2,7 +2,7 @@
 Beleggingsapp Agent Runner
 Laadt runtime-agents vanuit YAML-configuraties en voert ze uit via Ollama.
 """
-import logging
+import structlog
 from pathlib import Path
 from typing import Any
 
@@ -11,7 +11,7 @@ import yaml
 from .client import OllamaClient, get_client
 from .prompt_iterator import PromptIterator
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _API_ROOT = Path(__file__).parent.parent.parent  # apps/api/
 AGENTS_DIR = _API_ROOT / "ai_agents"

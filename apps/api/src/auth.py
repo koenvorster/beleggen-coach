@@ -1,5 +1,5 @@
 """Keycloak JWT verificatie dependencies voor FastAPI."""
-import logging
+import structlog
 import time
 import uuid
 from typing import Annotated
@@ -11,7 +11,7 @@ from jose import JWTError, jwt
 
 from .config import settings
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _bearer = HTTPBearer(auto_error=False)
 

@@ -1,13 +1,13 @@
 """yfinance adapter — implementatie van MarketDataPort."""
 import asyncio
-import logging
+import structlog
 from datetime import datetime, timezone
 
 import yfinance as yf
 
 from .interface import CurrentPrice, MarketDataPort, PricePoint
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 # Mapping ISIN → yfinance ticker (exchange-suffix nodig voor Europese ETFs)
 # ISINs zijn afgeleid van de ETF-catalogus in src/data/etf_catalog.py

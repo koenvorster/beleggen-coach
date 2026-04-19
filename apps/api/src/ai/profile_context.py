@@ -1,7 +1,7 @@
 """Profielcontext voor AI chat — injecteer investeerdersprofiel en top-3 ETFs."""
 from __future__ import annotations
 
-import logging
+import structlog
 import uuid
 from dataclasses import dataclass, field
 from typing import Any
@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..data.etf_catalog import ETF_CATALOG, ETFEntry
 from ..models import InvestorProfile
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 # ─── Mappings ────────────────────────────────────────────────────────────────
 

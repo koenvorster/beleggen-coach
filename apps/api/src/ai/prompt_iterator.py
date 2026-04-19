@@ -3,14 +3,14 @@ Beleggingsapp Prompt Iteratie Systeem
 Beheert prompt-versies en feedback voor continue verbetering van runtime-agents.
 """
 import json
-import logging
+import structlog
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _API_ROOT = Path(__file__).parent.parent.parent  # apps/api/
 PROMPTS_DIR = _API_ROOT / "prompts"

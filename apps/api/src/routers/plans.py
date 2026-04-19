@@ -1,6 +1,7 @@
 """Plans router — aanmaken en ophalen van beleggingsplannen."""
 import uuid
 
+import structlog
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +10,7 @@ from ..database import get_db
 from ..schemas import PlanCreate, PlanResponse
 from ..services.plan_service import create_plan, get_plan, get_plans
 
+logger = structlog.get_logger(__name__)
 router = APIRouter(tags=["plans"])
 
 
@@ -35,6 +37,7 @@ async def create_user_plan(
     """
     verify_ownership(current_user, user_id)
     plan = await create_plan(db, user_id, data)
+    logger.info("plan_aangemaakt", user_id=str(user_id), plan_id=str(plan.id), monthly_amount=float(data.monthly_amount))
     return plan
 
 

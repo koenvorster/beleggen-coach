@@ -1,5 +1,5 @@
 """ETF router met Redis caching voor lijst- en detailopvragen."""
-import logging
+import structlog
 from typing import Optional
 
 from fastapi import APIRouter, Query
@@ -7,7 +7,7 @@ from fastapi import APIRouter, Query
 from ..cache import cache_get, cache_set
 from ..data.etf_catalog import ETF_BY_ISIN, ETF_CATALOG
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/etfs", tags=["etfs"])
 
@@ -33,7 +33,7 @@ async def list_etfs(
     cache_key = f"etfs:list:{categorie}:{regio}:{max_ter}:{limit}"
     cached = await cache_get(cache_key)
     if cached is not None:
-        logger.debug("Cache hit voor %s", cache_key)
+        logger.debug("cache_hit", key=cache_key)
         return cached
 
     results = list(ETF_CATALOG)
@@ -54,6 +54,7 @@ async def list_etfs(
         "error": None,
     }
     await cache_set(cache_key, result, ttl_seconds=3600)
+    logger.info("etfs_listed", count=len(results), categorie=categorie, regio=regio, max_ter=max_ter)
     return result
 
 
@@ -70,7 +71,7 @@ async def get_etf(isin: str) -> dict:
     cache_key = f"etfs:detail:{isin.upper()}"
     cached = await cache_get(cache_key)
     if cached is not None:
-        logger.debug("Cache hit voor %s", cache_key)
+        logger.debug("cache_hit", key=cache_key)
         return cached
 
     etf = ETF_BY_ISIN.get(isin.upper())
@@ -86,5 +87,6 @@ async def get_etf(isin: str) -> dict:
 
     result = {"success": True, "data": etf, "error": None}
     await cache_set(cache_key, result, ttl_seconds=21600)
+    logger.info("etf_fetched", isin=isin.upper())
     return result
 

@@ -1,13 +1,13 @@
 """Redis cache client voor de beleggingsapp API."""
 import json
-import logging
+import structlog
 from typing import Any
 
 import redis.asyncio as aioredis
 
 from .config import settings
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _redis_client: aioredis.Redis | None = None
 
@@ -29,7 +29,7 @@ async def cache_get(key: str) -> Any | None:
             return None
         return json.loads(raw)
     except Exception as e:
-        logger.warning("Redis cache get fout voor key=%s: %s", key, e)
+        logger.warning("cache_get_error", key=key, error=str(e))
         return None
 
 
@@ -39,7 +39,7 @@ async def cache_set(key: str, value: Any, ttl_seconds: int = 3600) -> None:
         client = await get_redis()
         await client.setex(key, ttl_seconds, json.dumps(value))
     except Exception as e:
-        logger.warning("Redis cache set fout voor key=%s: %s", key, e)
+        logger.warning("cache_set_error", key=key, error=str(e))
 
 
 async def cache_delete(key: str) -> None:
@@ -48,7 +48,7 @@ async def cache_delete(key: str) -> None:
         client = await get_redis()
         await client.delete(key)
     except Exception as e:
-        logger.warning("Redis cache delete fout voor key=%s: %s", key, e)
+        logger.warning("cache_delete_error", key=key, error=str(e))
 
 
 async def ping_redis() -> bool:

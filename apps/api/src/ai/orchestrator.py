@@ -3,13 +3,13 @@ Beleggingsapp Multi-Agent Orchestrator
 Coördineert meerdere AI-agents in beleggen-specifieke workflows.
 """
 import asyncio
-import logging
+import structlog
 from dataclasses import dataclass, field
 from typing import Any
 
 from .agent_runner import AgentRunner, get_runner
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 @dataclass

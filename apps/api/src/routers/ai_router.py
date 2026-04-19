@@ -1,5 +1,5 @@
 """FastAPI AI router — Ollama agent endpoints."""
-import logging
+import structlog
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
@@ -12,7 +12,7 @@ from ..ai import get_client, get_orchestrator, get_runner
 from ..ai.chat_memory import add_message, get_context_messages
 from ..ai.profile_context import build_system_prompt, load_profile_for_user
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 router = APIRouter(prefix="/ai", tags=["ai"])
 
 _OLLAMA_UNAVAILABLE_NL = (

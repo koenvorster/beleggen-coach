@@ -2,12 +2,12 @@
 Beleggingsapp Ollama Client
 Lokale AI-integratie via Ollama voor agent-aanroepen.
 """
-import logging
+import structlog
 from typing import AsyncGenerator
 
 import httpx
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class OllamaClient:

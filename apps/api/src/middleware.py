@@ -6,7 +6,7 @@ import structlog
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-logger = structlog.get_logger()
+logger = structlog.get_logger(__name__)
 
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
@@ -19,16 +19,37 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         structlog.contextvars.clear_contextvars()
         structlog.contextvars.bind_contextvars(request_id=request_id)
 
-        response = await call_next(request)
+        try:
+            response = await call_next(request)
+        except Exception:
+            duration_ms = round((time.perf_counter() - start) * 1000, 1)
+            logger.error(
+                "request_error",
+                method=request.method,
+                path=request.url.path,
+                duration_ms=duration_ms,
+                exc_info=True,
+            )
+            raise
 
         duration_ms = round((time.perf_counter() - start) * 1000, 1)
-        logger.info(
-            "request",
-            method=request.method,
-            path=request.url.path,
-            status=response.status_code,
-            duration_ms=duration_ms,
-        )
+
+        if response.status_code >= 500:
+            logger.error(
+                "request",
+                method=request.method,
+                path=request.url.path,
+                status_code=response.status_code,
+                duration_ms=duration_ms,
+            )
+        else:
+            logger.info(
+                "request",
+                method=request.method,
+                path=request.url.path,
+                status_code=response.status_code,
+                duration_ms=duration_ms,
+            )
 
         response.headers["X-Request-ID"] = request_id
         return response

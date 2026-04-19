@@ -1,12 +1,12 @@
 """Redis-cached wrapper rond MarketDataPort."""
 import dataclasses
-import logging
+import structlog
 from datetime import date
 
 from ...cache import cache_get, cache_set
 from .interface import CurrentPrice, MarketDataPort, PricePoint
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 PRICE_TTL = 900     # 15 minuten voor huidige koers
 HISTORY_TTL = 3600  # 1 uur voor koershistorie

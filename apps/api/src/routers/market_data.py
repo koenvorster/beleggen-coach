@@ -1,5 +1,5 @@
 """Marktdata router — koersen en historische data via ACL."""
-import logging
+import structlog
 from typing import Literal
 
 from fastapi import APIRouter, Query
@@ -7,7 +7,7 @@ from fastapi import APIRouter, Query
 from ..infrastructure.market_data.cached_adapter import CachedMarketDataAdapter
 from ..infrastructure.market_data.yfinance_adapter import YFinanceAdapter
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 router = APIRouter(prefix="/market", tags=["marktdata"])
 
 _adapter = CachedMarketDataAdapter(YFinanceAdapter())

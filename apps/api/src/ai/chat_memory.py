@@ -1,11 +1,11 @@
 """Redis-backed chat memory voor AI coach sessies."""
-import logging
+import structlog
 from datetime import datetime, timezone
 from typing import Any
 
 from ..cache import cache_get, cache_set, cache_delete
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 CHAT_TTL_SECONDS = 86400  # 24 uur
 MAX_MESSAGES = 20  # sliding window
