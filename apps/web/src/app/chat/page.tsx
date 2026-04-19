@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 
-const DEV_USER_ID = "dev-user-00000000";
+const DEV_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 interface Message {
   id: string;

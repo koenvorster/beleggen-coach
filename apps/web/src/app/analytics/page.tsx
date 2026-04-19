@@ -18,7 +18,7 @@ import { loadProfile, calcProjectedValue, type UserProfile } from "@/lib/profile
 import { MOCK_ETFS } from "@/lib/mock-etfs";
 import { api, type CheckIn } from "@/lib/api";
 
-const USER_ID = "dev-user-00000000";
+const USER_ID = "00000000-0000-0000-0000-000000000000";
 
 const MAANDEN = ["Jan", "Feb", "Mrt", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
 

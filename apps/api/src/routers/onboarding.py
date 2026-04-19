@@ -42,7 +42,7 @@ async def onboarding_start(
     summary="Stap 2: Sla investeerdersprofiel op",
 )
 async def onboarding_profile(
-    user_id: uuid.UUID,
+    user_id: str,
     body: OnboardingProfileRequest,
     db: AsyncSession = Depends(get_db),
     current_user: str | None = Depends(get_optional_user),
@@ -61,7 +61,7 @@ async def onboarding_profile(
     summary="Stap 3: Haal onboarding-samenvatting op",
 )
 async def onboarding_summary(
-    user_id: uuid.UUID,
+    user_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: str | None = Depends(get_optional_user),
 ) -> OnboardingSummaryResponse:

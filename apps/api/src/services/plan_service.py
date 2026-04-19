@@ -9,7 +9,7 @@ from ..models import Plan
 from ..schemas import PlanCreate
 
 
-async def create_plan(db: AsyncSession, user_id: uuid.UUID, data: PlanCreate) -> Plan:
+async def create_plan(db: AsyncSession, user_id: str, data: PlanCreate) -> Plan:
     """Maak een nieuw beleggingsplan aan voor een gebruiker.
 
     Args:
@@ -41,7 +41,7 @@ async def create_plan(db: AsyncSession, user_id: uuid.UUID, data: PlanCreate) ->
     return plan
 
 
-async def get_plans(db: AsyncSession, user_id: uuid.UUID) -> list[Plan]:
+async def get_plans(db: AsyncSession, user_id: str) -> list[Plan]:
     """Haal alle plannen op voor een gebruiker.
 
     Args:
@@ -59,7 +59,7 @@ async def get_plans(db: AsyncSession, user_id: uuid.UUID) -> list[Plan]:
     return list(result.scalars().all())
 
 
-async def get_plan(db: AsyncSession, user_id: uuid.UUID, plan_id: uuid.UUID) -> Plan | None:
+async def get_plan(db: AsyncSession, user_id: str, plan_id: uuid.UUID) -> Plan | None:
     """Haal één plan op voor een gebruiker.
 
     Args:

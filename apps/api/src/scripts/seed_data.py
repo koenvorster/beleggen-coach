@@ -108,7 +108,7 @@ async def seed_demo_user(session) -> None:
         "email": "dev@example.com",
         "naam": "Demo Gebruiker",
         "taal": "nl",
-        "keycloak_user_id": "dev-user-00000000",
+        "keycloak_user_id": "00000000-0000-0000-0000-000000000000",
     }
     user_stmt = (
         pg_insert(User)

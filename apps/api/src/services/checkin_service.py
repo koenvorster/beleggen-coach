@@ -11,7 +11,7 @@ from ..schemas import CheckInCreate
 
 
 async def create_checkin(
-    db: AsyncSession, user_id: uuid.UUID, data: CheckInCreate
+    db: AsyncSession, user_id: str, data: CheckInCreate
 ) -> tuple[CheckIn, bool]:
     """Maak een check-in aan voor een gebruiker en maand.
 
@@ -63,7 +63,7 @@ async def create_checkin(
         return existing, False
 
 
-async def get_checkins(db: AsyncSession, user_id: uuid.UUID) -> list[CheckIn]:
+async def get_checkins(db: AsyncSession, user_id: str) -> list[CheckIn]:
     """Haal alle check-ins op voor een gebruiker.
 
     Args:

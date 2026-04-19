@@ -16,7 +16,7 @@ logger = structlog.get_logger(__name__)
 _bearer = HTTPBearer(auto_error=False)
 
 # Sentinel voor dev-mode wanneer AUTH_ENABLED=false
-DEV_USER_ID = "dev-user-00000000"
+DEV_USER_ID = "00000000-0000-0000-0000-000000000000"
 
 # Module-level JWKS-cache met 10 minuten TTL
 _jwks_cache: dict = {"keys": [], "fetched_at": 0.0}

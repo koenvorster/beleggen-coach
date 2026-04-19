@@ -34,7 +34,7 @@ async def create_or_get_user(db: AsyncSession, data: OnboardingStartRequest) -> 
 
 async def save_investor_profile(
     db: AsyncSession,
-    user_id: uuid.UUID,
+    user_id: str,
     data: OnboardingProfileRequest,
 ) -> InvestorProfile:
     """Sla investeerdersprofiel op (upsert op user_id)."""
@@ -68,7 +68,7 @@ async def save_investor_profile(
     return profile
 
 
-async def get_onboarding_summary(db: AsyncSession, user_id: uuid.UUID) -> dict | None:
+async def get_onboarding_summary(db: AsyncSession, user_id: str) -> dict | None:
     """Haal gebruiker + profiel op als samenvatting."""
     user = await db.scalar(select(User).where(User.id == user_id))
     if not user:

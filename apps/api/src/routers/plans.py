@@ -16,7 +16,7 @@ router = APIRouter(tags=["plans"])
 
 @router.post("/users/{user_id}/plans", response_model=PlanResponse, status_code=201)
 async def create_user_plan(
-    user_id: uuid.UUID,
+    user_id: str,
     data: PlanCreate,
     db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user),
@@ -43,7 +43,7 @@ async def create_user_plan(
 
 @router.get("/users/{user_id}/plans", response_model=list[PlanResponse])
 async def list_user_plans(
-    user_id: uuid.UUID,
+    user_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user),
 ) -> list[PlanResponse]:
@@ -66,7 +66,7 @@ async def list_user_plans(
 
 @router.get("/users/{user_id}/plans/{plan_id}", response_model=PlanResponse)
 async def get_user_plan(
-    user_id: uuid.UUID,
+    user_id: str,
     plan_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user),

@@ -15,7 +15,7 @@ import { RefreshCw, Save } from "lucide-react";
 import { loadProfile, getSuggestedETF, riskLabel, type UserProfile } from "@/lib/profile";
 import { api, type BackendETF, type Plan } from "@/lib/api";
 
-const USER_ID = "dev-user-00000000";
+const USER_ID = "00000000-0000-0000-0000-000000000000";
 
 const DEFAULT_MONTHLY = 200;
 const DEFAULT_YEARS = 20;

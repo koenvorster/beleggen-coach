@@ -1,7 +1,7 @@
 """Portfolio router — posities in de portefeuille beheren."""
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException  # uuid still needed for position_id
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..auth import get_current_user, verify_ownership
@@ -14,7 +14,7 @@ router = APIRouter(tags=["portfolio"])
 
 @router.get("/users/{user_id}/positions", response_model=list[PortfolioPositionResponse])
 async def list_positions(
-    user_id: uuid.UUID,
+    user_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user),
 ) -> list[PortfolioPositionResponse]:
@@ -37,7 +37,7 @@ async def list_positions(
 
 @router.post("/users/{user_id}/positions", response_model=PortfolioPositionResponse, status_code=201)
 async def create_position(
-    user_id: uuid.UUID,
+    user_id: str,
     data: PortfolioPositionCreate,
     db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user),
@@ -62,7 +62,7 @@ async def create_position(
 
 @router.delete("/users/{user_id}/positions/{position_id}", status_code=204)
 async def remove_position(
-    user_id: uuid.UUID,
+    user_id: str,
     position_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user),

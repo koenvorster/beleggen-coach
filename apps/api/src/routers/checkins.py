@@ -1,6 +1,4 @@
 """CheckIns router — maandelijkse check-ins aanmaken en ophalen."""
-import uuid
-
 import structlog
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,7 +14,7 @@ router = APIRouter(tags=["checkins"])
 
 @router.post("/users/{user_id}/checkins", response_model=CheckInResponse, status_code=201)
 async def create_user_checkin(
-    user_id: uuid.UUID,
+    user_id: str,
     data: CheckInCreate,
     db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user),
@@ -49,7 +47,7 @@ async def create_user_checkin(
 
 @router.get("/users/{user_id}/checkins", response_model=list[CheckInResponse])
 async def list_user_checkins(
-    user_id: uuid.UUID,
+    user_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user),
 ) -> list[CheckInResponse]:

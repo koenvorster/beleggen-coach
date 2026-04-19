@@ -8,7 +8,7 @@ from ..models import PortfolioPosition
 from ..schemas import PortfolioPositionCreate
 
 
-async def get_positions(db: AsyncSession, user_id: uuid.UUID) -> list[PortfolioPosition]:
+async def get_positions(db: AsyncSession, user_id: str) -> list[PortfolioPosition]:
     """Haal alle portefeuilleposities op voor een gebruiker.
 
     Args:
@@ -27,7 +27,7 @@ async def get_positions(db: AsyncSession, user_id: uuid.UUID) -> list[PortfolioP
 
 
 async def add_position(
-    db: AsyncSession, user_id: uuid.UUID, data: PortfolioPositionCreate
+    db: AsyncSession, user_id: str, data: PortfolioPositionCreate
 ) -> PortfolioPosition:
     """Voeg een nieuwe positie toe aan de portefeuille.
 
@@ -56,7 +56,7 @@ async def add_position(
 
 
 async def delete_position(
-    db: AsyncSession, user_id: uuid.UUID, position_id: uuid.UUID
+    db: AsyncSession, user_id: str, position_id: uuid.UUID
 ) -> bool:
     """Verwijder een positie uit de portefeuille.
 
