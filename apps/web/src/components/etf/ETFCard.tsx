@@ -1,7 +1,8 @@
-import { TrendingUp, TrendingDown, PlusCircle, CheckCircle2 } from "lucide-react";
+import { TrendingUp, TrendingDown, PlusCircle, CheckCircle2, Heart } from "lucide-react";
 
 interface ETFCardProps {
   ticker: string;
+  isin?: string;
   name: string;
   ter: number;
   beginnerScore: number;
@@ -10,6 +11,8 @@ interface ETFCardProps {
   accumulating: boolean;
   onCompare?: (ticker: string) => void;
   compareSelected?: boolean;
+  onWatchlist?: (isin: string) => void;
+  watchlistActive?: boolean;
 }
 
 function ScoreBar({ score }: { score: number }) {
@@ -47,6 +50,7 @@ function ScoreBadge({ score }: { score: number }) {
 
 export default function ETFCard({
   ticker,
+  isin,
   name,
   ter,
   beginnerScore,
@@ -55,6 +59,8 @@ export default function ETFCard({
   accumulating,
   onCompare,
   compareSelected = false,
+  onWatchlist,
+  watchlistActive = false,
 }: ETFCardProps) {
   return (
     <div
@@ -119,6 +125,20 @@ export default function ETFCard({
                 <PlusCircle className="w-3 h-3" />
               )}
               Vergelijk
+            </button>
+          )}
+          {onWatchlist && isin && (
+            <button
+              onClick={() => onWatchlist(isin)}
+              title={watchlistActive ? "Verwijder van volglijst" : "Voeg toe aan volglijst"}
+              className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full border transition-colors ${
+                watchlistActive
+                  ? "bg-rose-500 text-white border-rose-500"
+                  : "bg-white text-gray-500 border-gray-200 hover:border-rose-400 hover:text-rose-500"
+              }`}
+            >
+              <Heart className="w-3 h-3" fill={watchlistActive ? "currentColor" : "none"} />
+              {watchlistActive ? "Gevolgd" : "Volglijst"}
             </button>
           )}
         </div>

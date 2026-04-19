@@ -88,6 +88,15 @@ export interface PortfolioPosition extends PortfolioPositionCreate {
   user_id: string;
 }
 
+export interface Risicoscan {
+  score: number;
+  score_label: string;
+  ter_gewogen: number;
+  geografisch: Record<string, number>;
+  aanbevelingen: string[];
+  risico_niveau: "laag" | "medium" | "hoog";
+}
+
 export interface OnboardingProfile {
   goal: string;
   monthly: number;
@@ -131,6 +140,7 @@ export interface PlanResponse {
  */
 export function toETFCardProps(etf: BackendETF) {
   return {
+    isin: etf.isin,
     ticker: etf.ticker,
     name: etf.naam,
     ter: etf.expense_ratio,
@@ -309,5 +319,8 @@ export const api = {
         `/users/${userId}/positions/${positionId}`,
         { method: "DELETE" }
       ).then(() => undefined),
+
+    risicoscan: (userId: string): Promise<Risicoscan> =>
+      apiFetch<Risicoscan>(`/users/${userId}/portfolio/risicoscan`),
   },
 };

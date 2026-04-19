@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..auth import get_current_user, verify_ownership
 from ..database import get_db
 from ..schemas import PortfolioPositionCreate, PortfolioPositionResponse
-from ..services.portfolio_service import add_position, delete_position, get_positions
+from ..services.portfolio_service import add_position, analyze_portfolio_risk, delete_position, get_positions
 
 router = APIRouter(tags=["portfolio"])
 
@@ -83,3 +83,27 @@ async def remove_position(
     deleted = await delete_position(db, user_id, position_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Positie niet gevonden.")
+
+
+@router.get("/users/{user_id}/portfolio/risicoscan")
+async def get_risicoscan(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: str = Depends(get_current_user),
+) -> dict:
+    """Analyseer portefeuille op risico en diversificatie.
+
+    Args:
+        user_id: UUID van de gebruiker.
+        db: Async database sessie (DI).
+        current_user: Geverifieerde user_id uit het JWT.
+
+    Returns:
+        Risicoscan-resultaat met score, TER, geografische spreiding en aanbevelingen.
+
+    Raises:
+        HTTPException 403: Als de ingelogde gebruiker niet de eigenaar is.
+    """
+    verify_ownership(current_user, user_id)
+    positions = await get_positions(db, user_id)
+    return analyze_portfolio_risk(positions)

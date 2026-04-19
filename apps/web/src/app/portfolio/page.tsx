@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Trash2, PlusCircle, RefreshCw } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { MOCK_ETFS } from "@/lib/mock-etfs";
-import { api, type PortfolioPosition } from "@/lib/api";
+import { api, type PortfolioPosition, type Risicoscan } from "@/lib/api";
+import RisicoscanWidget from "@/components/RisicoscanWidget";
 
 const USER_ID = "00000000-0000-0000-0000-000000000000";
 
@@ -44,6 +45,8 @@ export default function PortfolioPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [risicoscan, setRisicoscan] = useState<Risicoscan | null>(null);
+  const [scanLoading, setScanLoading] = useState(false);
 
   // Form state
   const [ticker, setTicker] = useState(MOCK_ETFS[0].ticker);
@@ -61,6 +64,18 @@ export default function PortfolioPage() {
       setError(err instanceof Error ? err.message : "Kon de portefeuille niet laden");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadRisicoscan() {
+    setScanLoading(true);
+    try {
+      const scan = await api.portfolio.risicoscan(USER_ID);
+      setRisicoscan(scan);
+    } catch {
+      // Scan is optioneel — niet kritisch
+    } finally {
+      setScanLoading(false);
     }
   }
 
@@ -267,6 +282,33 @@ export default function PortfolioPage() {
               <Legend />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Risicoscan */}
+      {positions.length > 0 && (
+        <div>
+          {risicoscan ? (
+            <RisicoscanWidget data={risicoscan} />
+          ) : (
+            <div className="card text-center py-8 space-y-3">
+              <p className="text-gray-500 text-sm">
+                Analyseer je portefeuille op risico, spreiding en kosten.
+              </p>
+              <button
+                onClick={loadRisicoscan}
+                disabled={scanLoading}
+                className="btn-secondary flex items-center gap-2 mx-auto"
+              >
+                {scanLoading ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
+                  "🔍"
+                )}
+                {scanLoading ? "Bezig met analyseren…" : "Risicoscan starten"}
+              </button>
+            </div>
+          )}
         </div>
       )}
 

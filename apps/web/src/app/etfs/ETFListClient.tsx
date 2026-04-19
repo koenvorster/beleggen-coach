@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ETFCard from "@/components/etf/ETFCard";
 import { Search, GitCompareArrows } from "lucide-react";
 import { toETFCardProps, type BackendETF } from "@/lib/api";
+import { useWatchlist } from "@/lib/use-watchlist";
 
 const CATEGORIES = [
   "Alle",
@@ -29,6 +30,7 @@ export default function ETFListClient({
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [compareList, setCompareList] = useState<string[]>([]);
+  const { toggle, isInWatchlist } = useWatchlist();
 
   const filtered = etfs.filter((etf) => {
     if (!search) return true;
@@ -97,6 +99,8 @@ export default function ETFListClient({
               {...toETFCardProps(etf)}
               onCompare={handleCompare}
               compareSelected={compareList.includes(etf.ticker)}
+              onWatchlist={toggle}
+              watchlistActive={isInWatchlist(etf.isin)}
             />
           ))}
         </div>
