@@ -1,3 +1,47 @@
+// ─── Analytics interfaces ─────────────────────────────────────────────────────
+
+export interface ETFMetric {
+  ticker: string;
+  naam: string;
+  return_1m: number | null;
+  return_3m: number | null;
+  return_ytd: number | null;
+  return_1y: number | null;
+  return_3y: number | null;
+  return_5y: number | null;
+  volatility_1y: number | null;
+  sharpe_1y: number | null;
+  max_drawdown: number | null;
+  last_price: number | null;
+}
+
+export interface PlatformStats {
+  populairste_etf: string;
+  gem_maandelijks_bedrag: number;
+  gem_streak_maanden: number;
+  pct_duurzaam: number;
+  totaal_gebruikers: number;
+  etfs_gevolgd: number;
+}
+
+// ─── Analytics interfaces ─────────────────────────────────────────────────────
+
+export interface ETFMetric {
+  ticker: string;
+  naam: string;
+  ter?: number | null;
+  return_1m: number | null;
+  return_3m: number | null;
+  return_ytd: number | null;
+  return_1y: number | null;
+  return_3y: number | null;
+  return_5y: number | null;
+  volatility_1y: number | null;
+  sharpe_1y: number | null;
+  max_drawdown: number | null;
+  last_price: number | null;
+}
+
 // ─── Marktdata interfaces ─────────────────────────────────────────────────────
 
 export interface MarktIndex {
@@ -295,9 +339,23 @@ export const api = {
       apiFetch<void>(`/chat/${userId}/history`, { method: "DELETE" }),
   },
 
+  /** Analytics-eindpunten */
+  analytics: {
+    /** Haal ETF performance metrics op voor alle gevolgde ETFs. */
+    etfMetrics: (): Promise<ETFMetric[]> =>
+      apiFetch<ApiResponse<ETFMetric[]>>("/analytics/etf-metrics").then(
+        (r) => r.data ?? []
+      ),
+
+    /** Haal koershistorie op voor een ETF-ticker. */
+    etfHistory: (ticker: string, periode = "1y"): Promise<KoersDataPunt[]> =>
+      apiFetch<ApiResponse<KoersDataPunt[]>>(
+        `/analytics/etf-history/${encodeURIComponent(ticker)}?periode=${periode}`
+      ).then((r) => r.data ?? []),
+  },
+
   /** Portfolio-eindpunten */
-  portfolio: {
-    get: (userId: string): Promise<PortfolioPosition[]> =>
+  portfolio: {get: (userId: string): Promise<PortfolioPosition[]> =>
       apiFetch<PortfolioPosition[]>(
         `/users/${userId}/positions`
       ).then((r) => Array.isArray(r) ? r : []),
@@ -322,5 +380,32 @@ export const api = {
 
     risicoscan: (userId: string): Promise<Risicoscan> =>
       apiFetch<Risicoscan>(`/users/${userId}/portfolio/risicoscan`),
+  },
+
+  /** Analytics eindpunten */
+  analytics: {
+    /** Berekende performance metrics voor alle ETFs. */
+    getETFMetrics: (): Promise<ETFMetric[]> =>
+      apiFetch<{ success: boolean; data: ETFMetric[]; error: null }>(
+        "/analytics/etf-metrics"
+      ).then((r) => r.data ?? []),
+
+    /** Historische dagelijkse prijzen voor een specifieke ETF. */
+    getETFHistory: (
+      ticker: string,
+      periode = "1y"
+    ): Promise<{ datum: string; koers: number }[]> =>
+      apiFetch<{ success: boolean; data: { datum: string; koers: number }[]; error: null }>(
+        `/analytics/etf-history/${encodeURIComponent(ticker)}?periode=${periode}`
+      ).then((r) => r.data ?? []),
+
+    /** Anonieme platform statistieken. */
+    getPlatformStats: (): Promise<PlatformStats> =>
+      apiFetch<{ success: boolean; data: PlatformStats; error: null }>(
+        "/analytics/platform-stats"
+      ).then((r) => {
+        if (!r.data) throw new Error("Platform stats niet beschikbaar");
+        return r.data;
+      }),
   },
 };

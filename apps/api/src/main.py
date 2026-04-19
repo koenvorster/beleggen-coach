@@ -16,6 +16,7 @@ from .routers.checkins import router as checkins_router
 from .routers.portfolio import router as portfolio_router
 from .routers.chat_memory import router as chat_memory_router
 from .routers.market_data import router as market_data_router
+from .routers.analytics import router as analytics_router
 
 logger = structlog.get_logger(__name__)
 
@@ -68,3 +69,4 @@ app.include_router(checkins_router, prefix="/api/v1")
 app.include_router(portfolio_router, prefix="/api/v1")
 app.include_router(chat_memory_router, prefix="/api/v1")
 app.include_router(market_data_router, prefix="/api/v1")
+app.include_router(analytics_router, prefix="/api/v1")

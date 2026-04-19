@@ -6,6 +6,7 @@ from .checkins import router as checkins_router
 from .portfolio import router as portfolio_router
 from .chat_memory import router as chat_memory_router
 from .market_data import router as market_data_router
+from .analytics import router as analytics_router
 
 __all__ = [
     "onboarding_router",
@@ -16,4 +17,5 @@ __all__ = [
     "portfolio_router",
     "chat_memory_router",
     "market_data_router",
+    "analytics_router",
 ]
