@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Shield, BookOpen, TrendingUp } from "lucide-react";
+import HomeWidgets from "@/components/ui/HomeWidgets";
 
 export default function HomePage() {
   return (
@@ -55,6 +56,9 @@ export default function HomePage() {
           </div>
         ))}
       </section>
+
+      {/* Widgets: leerpad banner + statistieken + tips */}
+      <HomeWidgets />
 
       {/* CTA strip */}
       <section className="bg-primary-500 rounded-3xl p-8 sm:p-12 text-center text-white space-y-4">

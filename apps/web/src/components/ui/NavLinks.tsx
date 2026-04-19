@@ -12,8 +12,10 @@ const NAV_LINKS = [
   { href: "/portfolio", label: "Portfolio" },
   { href: "/chat", label: "AI Coach" },
   { href: "/analytics", label: "Analyse" },
+  { href: "/leren", label: "Leerpad 🛏️" },
   { href: "/learn", label: "Leercentrum" },
   { href: "/bronnen", label: "Bronnen" },
+  { href: "/belasting", label: "🏦 Belasting" },
 ];
 
 export default function NavLinks() {
