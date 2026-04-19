@@ -1,4 +1,5 @@
 import { TrendingUp, TrendingDown, PlusCircle, CheckCircle2, Heart } from "lucide-react";
+import ReyndersWidget from "./ReyndersWidget";
 
 interface ETFCardProps {
   ticker: string;
@@ -13,6 +14,7 @@ interface ETFCardProps {
   compareSelected?: boolean;
   onWatchlist?: (isin: string) => void;
   watchlistActive?: boolean;
+  bondAllocationPercent?: number;
 }
 
 function ScoreBar({ score }: { score: number }) {
@@ -61,6 +63,7 @@ export default function ETFCard({
   compareSelected = false,
   onWatchlist,
   watchlistActive = false,
+  bondAllocationPercent,
 }: ETFCardProps) {
   return (
     <div
@@ -90,6 +93,10 @@ export default function ETFCard({
       </div>
 
       <p className="text-sm text-gray-500">{description}</p>
+
+      {bondAllocationPercent !== undefined && (
+        <ReyndersWidget bondAllocationPercent={bondAllocationPercent} etfName={name} />
+      )}
 
       <ScoreBar score={beginnerScore} />
 

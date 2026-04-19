@@ -20,6 +20,11 @@ RISK_TOLERANCE_TO_LEVEL: dict[str, int] = {
     "laag": 2,
     "matig": 4,
     "hoog": 6,
+    "gemiddeld": 4,
+    "defensief": 2,
+    "offensief": 6,
+    "voorzichtig": 2,
+    "avontuurlijk": 6,
 }
 
 RISK_LEVEL_LABELS: dict[int, str] = {
@@ -54,6 +59,7 @@ class ProfileContext:
     risk_tolerance: str
     risk_level: int
     top3: list[dict[str, Any]] = field(default_factory=list)
+    emergency_fund_ready: bool = True
 
 
 DEFAULT_PROFILE_CONTEXT = ProfileContext(

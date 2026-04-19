@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { ArrowRight, Shield, BookOpen, TrendingUp } from "lucide-react";
 import HomeWidgets from "@/components/ui/HomeWidgets";
+import NudgeBanner from "@/components/coaching/NudgeBanner";
 
 export default function HomePage() {
   return (
     <div className="space-y-16">
+      <NudgeBanner />
       {/* Hero */}
       <section className="text-center py-16 space-y-6">
         <span className="inline-block bg-primary-50 text-primary-700 text-sm font-semibold px-4 py-1.5 rounded-full">

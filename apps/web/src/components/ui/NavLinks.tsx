@@ -17,6 +17,10 @@ const NAV_LINKS = [
   { href: "/learn", label: "Leercentrum" },
   { href: "/bronnen", label: "Bronnen" },
   { href: "/belasting", label: "🏦 Belasting" },
+  { href: "/brokers", label: "🏦 Brokers" },
+  { href: "/fire", label: "🔥 FIRE Calculator" },
+  { href: "/scenario", label: "📊 Scenario Planner" },
+  { href: "/prestaties", label: "🏆 Prestaties" },
 ];
 
 export default function NavLinks() {

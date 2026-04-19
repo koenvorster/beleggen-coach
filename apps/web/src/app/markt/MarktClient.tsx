@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { api, type MarktIndex, type KoersDataPunt } from "@/lib/api";
+import AntiPanicMode from "@/components/coaching/AntiPanicMode";
 
 // ─── Configuratie ─────────────────────────────────────────────────────────────
 
@@ -428,6 +429,9 @@ export default function MarktClient() {
         <strong>⚠️ Disclaimer</strong> — Koersen zijn indicatief en worden vertraagd weergegeven via Yahoo Finance.
         Dit is geen realtime data en geen beleggingsadvies. Raadpleeg je broker voor actuele koersen.
       </div>
+
+      {/* Anti-panic coaching widget */}
+      <AntiPanicMode alwaysVisible={true} />
     </div>
   );
 }
