@@ -2,7 +2,16 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: path.join(__dirname, "../../"),
+  // Voorkomt dat Next.js de hele schijf scant voor file tracing
+  outputFileTracingRoot: path.join(__dirname, "../.."),
+  outputFileTracingExcludes: {
+    "*": [
+      "**/.venv/**",
+      "**/node_modules/.cache/**",
+      "**/__pycache__/**",
+      "**/alembic/**",
+    ],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

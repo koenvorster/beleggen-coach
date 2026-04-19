@@ -2,6 +2,14 @@
 import asyncio
 import os
 from logging.config import fileConfig
+from pathlib import Path
+
+# Laad .env bestand zodat DATABASE_URL beschikbaar is
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent.parent / ".env")
+except ImportError:
+    pass  # python-dotenv optioneel
 
 from alembic import context
 from sqlalchemy import pool
