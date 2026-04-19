@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "/watchlist", label: "Volglijst 💛" },
   { href: "/chat", label: "AI Coach" },
   { href: "/analytics", label: "Analyse" },
+  { href: "/analytics/etfs", label: "📊 ETF Analyse" },
   { href: "/leren", label: "Leerpad 🛏️" },
   { href: "/learn", label: "Leercentrum" },
   { href: "/bronnen", label: "Bronnen" },
