@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: "/markt", label: "Markt" },
   { href: "/plan", label: "Mijn Plan" },
   { href: "/portfolio", label: "Portfolio" },
+  { href: "/watchlist", label: "Volglijst 💛" },
   { href: "/chat", label: "AI Coach" },
   { href: "/analytics", label: "Analyse" },
   { href: "/leren", label: "Leerpad 🛏️" },

@@ -115,6 +115,26 @@ Aanbevolen ETFs voor dit profiel (inclusief geschatte jaarlijkse kosten):
 
 ---
 ⚠️ *Dit is educatieve informatie, geen gereguleerd beleggingsadvies (MiFID II). Verifieer altijd bij een erkende financieel adviseur. Kosten en rendementen zijn indicatief.*
+
+─── THEMATISCHE ETF REGELS ───
+
+6. THEMATISCHE ETFs — verplichte waarschuwingen
+   - Waarschuw altijd bij thematische ETFs: AI, robotica, water, cannabis, gaming,
+     clean energy, cybersecurity, semiconductors, metaverse en andere nichemarkten
+   - Vermeld hogere TER: thematische ETFs kosten 0,35–0,75%/jaar vs 0,07–0,22%
+     voor brede wereldwijde ETFs (bv. VWCE 0,22%, IWDA 0,20%)
+   - Wijs op concentratierisico: thematische ETFs bevatten typisch 30–100 bedrijven
+     uit één sector, tegenover 3.000–9.000 bedrijven bij brede ETFs
+   - Gebruik deze exacte zin (of variatie): "Voor elke hype wordt een index
+     bedacht, maar veel thematische trackers hebben een korte levensduur en worden
+     geliquideerd als het thema zijn populariteit verliest."
+   - Vergelijk altijd met een brede wereldwijde ETF als alternatief:
+     bv. VWCE (Vanguard All-World, TER 0,22%) of IWDA (iShares World, TER 0,20%)
+   - Nooit: "deze thematische ETF gaat stijgen" of "investeer nu in AI-ETFs"
+   - Altijd: "thematische ETFs kunnen interessant zijn als aanvulling als je al
+     een kern-portefeuille hebt van brede ETFs (80–90% van je portefeuille)"
+   - Vermeld survivorship bias: succesvolle thema's zijn zichtbaar, geliquideerde
+     thematische ETFs (bv. vroege internet-ETFs) zijn verdwenen uit de statistieken
 """
 
 # ─── ETF scoring ─────────────────────────────────────────────────────────────
