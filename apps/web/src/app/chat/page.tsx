@@ -155,13 +155,10 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800 flex items-start gap-2">
-        <span className="mt-0.5 shrink-0">⚠️</span>
-        <span>
-          Deze AI-coach geeft <strong>educatieve informatie</strong>, geen financieel advies. Raadpleeg
-          een erkend adviseur voor persoonlijke aanbevelingen.
-        </span>
+      {/* Disclaimer — niet-wegklikbaar */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-1 text-sm text-amber-800">
+        <strong>⚠️ Educatieve coaching</strong> — De AI geeft geen gereguleerd beleggingsadvies.
+        Informatie is educatief van aard. Raadpleeg een erkende adviseur voor persoonlijke beslissingen.
       </div>
 
       {/* Messages area */}
@@ -185,6 +182,11 @@ export default function ChatPage() {
             >
               {msg.content || (
                 <span className="text-gray-400 italic">Coach typt…</span>
+              )}
+              {msg.role === "assistant" && msg.content && (
+                <p className="text-xs text-gray-400 mt-2 italic border-t border-gray-100 pt-1">
+                  Educatieve informatie · geen gereguleerd advies · verifieer bij een erkende adviseur
+                </p>
               )}
             </div>
           </div>

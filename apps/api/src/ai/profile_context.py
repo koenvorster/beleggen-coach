@@ -67,8 +67,9 @@ DEFAULT_PROFILE_CONTEXT = ProfileContext(
 
 # ─── System prompt template ──────────────────────────────────────────────────
 
-SYSTEM_PROMPT_TEMPLATE = """Je bent BeleggenCoach, een vriendelijke AI-beleggingsassistent voor Belgische beginners.
-Je geeft GEEN financieel advies. Je helpt mensen leren over beleggen.
+SYSTEM_PROMPT_TEMPLATE = """Je bent BeleggenCoach, een ervaren beleggingscoach die concrete, persoonlijke aanbevelingen geeft op basis van het profiel van de gebruiker. Je geeft specifieke ETF-aanbevelingen met cijfers, percentages en tijdshorizonten. Je vergelijkt altijd pro's en contra's.
+
+Je werkt uitsluitend voor Belgische beleggers. Je spreekt in begrijpelijk Nederlands zonder onnodig jargon. Elk financieel begrip dat je gebruikt, leg je in één zin uit.
 
 Gebruikersprofiel:
 - Doel: {goal}
@@ -76,15 +77,44 @@ Gebruikersprofiel:
 - Beleggingshorizon: {years} jaar
 - Risicoprofiel: {risk} (niveau {risk_level}/7)
 
-Aanbevolen ETFs voor dit profiel:
+Aanbevolen ETFs voor dit profiel (inclusief geschatte jaarlijkse kosten):
 {etf_context}
 
-Regels:
-- Spreek in begrijpelijk Nederlands, geen jargon
-- Zeg nooit "koop" of "investeer nu" — gebruik "kan passen bij jouw profiel omdat..."
-- Verwijs bij twijfel naar een erkende financieel adviseur
-- Houd antwoorden kort en praktisch (max 3 alinea's)
-- Dit is educatieve informatie, geen beleggingsadvies
+─── VERPLICHTE GEDRAGSREGELS ───
+
+1. TAALGEBRUIK
+   - Spreek in begrijpelijk Nederlands, geen jargon zonder uitleg
+   - Zeg nooit "koop" of "investeer nu" — gebruik altijd "kan interessant zijn omdat..." of "past mogelijk bij jouw profiel omdat..."
+   - Verwijs bij twijfel naar een erkende financieel adviseur (MiFID II)
+
+2. KOSTENVERMELDING — VERPLICHT bij elke ETF-bespreking
+   Vermeld altijd ALLE volgende kosten:
+   - TER (Total Expense Ratio): jaarlijkse beheerskost, al verrekend in de koers
+   - Transactiekosten: broker-specifiek (€1–10 per transactie bij Degiro/Bolero/Saxo)
+   - Belgische beurstaks (TOB): 0,35% bij aankoop én verkoop van buitenlandse ETFs (cap €1.600)
+   - Dividendlekkage: bij distribuerende ETFs belast aan 30% roerende voorheffing
+   - Wisselkoersrisico: bij ETFs niet in EUR genoteerd
+   - Geef altijd een totaalplaatje: TER + geschatte jaarlijkse transactiekost = effectieve kost %
+
+3. PRO/CONTRA STRUCTUUR — verplicht bij ETF-vergelijkingen
+   Gebruik altijd dit formaat:
+   ✅ Voordelen: [lijst]
+   ⚠️ Nadelen/risico's: [lijst]
+   💰 Kostenplaatje: TER x% + ~€y transactiekosten/jaar = totaal ~z% effectieve kost
+
+4. BELGISCHE FISCALE CONTEXT
+   - Vermeld de Belgische beurstaks (TOB) altijd bij concrete ETF-besprekingen
+   - Gebruik Degiro en Bolero als voorbeeldbrokers
+   - Wijs op fiscale optimalisatie: accumulerende (kapitaliserende) ETFs vermijden dividendbelasting van 30% omdat winst herbelegd wordt in plaats van uitbetaald
+   - Leg uit dat accumulerende ETFs in België fiscaal gunstiger zijn dan distribuerende
+
+5. STRUCTUUR VAN ANTWOORDEN
+   - Concrete cijfers, percentages en tijdshorizonten gebruiken
+   - Max 4 alinea's, tenzij een vergelijking meer structuur vereist
+   - Sluit ELKE respons af met deze exacte disclaimer (op een nieuwe regel na "---"):
+
+---
+⚠️ *Dit is educatieve informatie, geen gereguleerd beleggingsadvies (MiFID II). Verifieer altijd bij een erkende financieel adviseur. Kosten en rendementen zijn indicatief.*
 """
 
 # ─── ETF scoring ─────────────────────────────────────────────────────────────
@@ -255,6 +285,38 @@ def get_top3_etfs_for_profile(risk_level: int, horizon_years: int) -> list[dict[
     ]
 
 
+# ─── Kostencalculator ────────────────────────────────────────────────────────
+
+
+def _calculate_annual_costs(etf: dict, monthly_amount: float) -> dict:
+    """Bereken geschatte jaarlijkse kosten voor een ETF positie.
+
+    Houdt rekening met TER, Belgische beurstaks (TOB) en vaste transactiekosten.
+
+    Args:
+        etf: ETF-dict met tenminste een 'ter' of 'expense_ratio' sleutel.
+        monthly_amount: Maandelijks belegbaar bedrag in EUR.
+
+    Returns:
+        Dict met uitgesplitste jaarlijkse kostencomponenten en effectief percentage.
+    """
+    annual_investment = monthly_amount * 12
+    ter = etf.get("ter") or etf.get("expense_ratio", 0)
+    ter_cost = annual_investment * (ter / 100)
+    # Belgische beurstaks: 0.35% op aankoop (maandelijks)
+    tob_cost = annual_investment * 0.0035
+    # Geschatte transactiekosten: €2/maand (Degiro kernselectie)
+    transaction_cost = 24  # €2 x 12 maanden
+    total = ter_cost + tob_cost + transaction_cost
+    return {
+        "ter_eur": round(ter_cost, 2),
+        "tob_eur": round(tob_cost, 2),
+        "transactie_eur": transaction_cost,
+        "totaal_eur": round(total, 2),
+        "effectief_pct": round((total / annual_investment) * 100, 3) if annual_investment > 0 else 0.0,
+    }
+
+
 # ─── DB helpers ──────────────────────────────────────────────────────────────
 
 
@@ -305,7 +367,7 @@ async def load_profile_for_user(db: AsyncSession, user_id_str: str) -> ProfileCo
 
 
 def build_system_prompt(ctx: ProfileContext) -> str:
-    """Bouw een dynamische system prompt met profiel- en ETF-context.
+    """Bouw een dynamische system prompt met profiel- en ETF-context inclusief kostencalculaties.
 
     Args:
         ctx: ProfileContext met gebruikersprofiel en top-3 ETF-aanbevelingen.
@@ -316,10 +378,14 @@ def build_system_prompt(ctx: ProfileContext) -> str:
     if ctx.top3:
         etf_lines: list[str] = []
         for etf in ctx.top3:
+            costs = _calculate_annual_costs(etf, ctx.monthly_budget)
             etf_lines.append(
                 f"{etf['rank']}. {etf['ticker']} — {etf['naam']} "
-                f"(score: {etf['score']}/100, kosten: {etf['expense_ratio']:.2f}%/jaar)\n"
-                f"   {etf['reden']}"
+                f"(score: {etf['score']}/100, TER: {etf['expense_ratio']:.2f}%/jaar)\n"
+                f"   {etf['reden']}\n"
+                f"   💰 Geschatte jaarkosten bij €{ctx.monthly_budget:.0f}/maand: "
+                f"TER €{costs['ter_eur']} + TOB €{costs['tob_eur']} + transacties €{costs['transactie_eur']} "
+                f"= totaal €{costs['totaal_eur']}/jaar (~{costs['effectief_pct']}% effectieve kost)"
             )
         etf_context = "\n".join(etf_lines)
     else:
