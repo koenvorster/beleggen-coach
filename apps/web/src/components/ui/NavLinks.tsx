@@ -20,20 +20,24 @@ export default function NavLinks() {
 
   return (
     <>
-      {NAV_LINKS.map(({ href, label }) => (
-        <Link
-          key={href}
-          href={href}
-          className={clsx(
-            "hover:text-primary-600 transition-colors",
-            pathname === href || pathname.startsWith(href + "/")
-              ? "text-primary-600 font-semibold"
-              : "text-gray-600"
-          )}
-        >
-          {label}
-        </Link>
-      ))}
+      {NAV_LINKS.map(({ href, label }) => {
+        const name = href.replace(/^\//, "").replace(/[^a-z0-9]/gi, "");
+        return (
+          <Link
+            key={href}
+            href={href}
+            data-testid={`nav-${name}`}
+            className={clsx(
+              "hover:text-primary-600 transition-colors",
+              pathname === href || pathname.startsWith(href + "/")
+                ? "text-primary-600 font-semibold"
+                : "text-gray-600"
+            )}
+          >
+            {label}
+          </Link>
+        );
+      })}
     </>
   );
 }

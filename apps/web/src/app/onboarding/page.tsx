@@ -77,7 +77,7 @@ export default function OnboardingPage() {
 
       <StepIndicator current={step} steps={steps} />
 
-      <div className="card space-y-6">
+      <div data-testid="onboarding-form" className="card space-y-6">
         {step === 0 && (
           <div className="space-y-4">
             <h2 className="font-semibold text-gray-900 text-lg">Wat is je doel?</h2>

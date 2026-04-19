@@ -9,6 +9,7 @@ function SubmitButton() {
   return (
     <button
       type="submit"
+      data-testid="signin-button"
       disabled={pending}
       className="
         w-full flex items-center justify-center gap-2

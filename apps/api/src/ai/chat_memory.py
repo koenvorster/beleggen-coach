@@ -24,11 +24,15 @@ async def get_chat_history(user_id: str) -> list[dict[str, Any]]:
     Returns:
         Lijst van berichten: [{"role": "user"|"assistant", "content": str, "timestamp": str}]
     """
-    key = _chat_key(user_id)
-    data = await cache_get(key)
-    if data is None:
+    try:
+        key = _chat_key(user_id)
+        data = await cache_get(key)
+        if data is None:
+            return []
+        return data if isinstance(data, list) else []
+    except Exception as exc:
+        logger.warning("Chat history ophalen mislukt (user=%s): %s", user_id, exc)
         return []
-    return data if isinstance(data, list) else []
 
 
 async def add_message(user_id: str, role: str, content: str) -> list[dict[str, Any]]:
@@ -78,3 +82,53 @@ async def get_context_messages(user_id: str, max_context: int = 10) -> list[dict
     history = await get_chat_history(user_id)
     recent = history[-max_context:] if len(history) > max_context else history
     return [{"role": m["role"], "content": m["content"]} for m in recent]
+
+
+class RedisChatMemory:
+    """Sliding-window chat memory backed by Redis.
+
+    Key: chat:{user_id}
+    Format: JSON-geserialiseerde lijst in Redis via cache_set/cache_get
+    Max messages: 20 (sliding window — oudste verwijderd als vol)
+    TTL: 24 uur (reset bij elke schrijfactie)
+    """
+
+    def __init__(self, max_messages: int = MAX_MESSAGES, ttl_seconds: int = CHAT_TTL_SECONDS) -> None:
+        """Initialiseer het geheugen met configureerbare limieten.
+
+        Args:
+            max_messages: Maximaal aantal berichten in het sliding window.
+            ttl_seconds: Levensduur van de cache-entry in seconden.
+        """
+        self.max_messages = max_messages
+        self.ttl_seconds = ttl_seconds
+
+    async def add_message(self, user_id: str, role: str, content: str) -> None:
+        """Voeg een bericht toe en trim naar max, reset TTL.
+
+        Args:
+            user_id: Unieke gebruikers-ID.
+            role: "user" of "assistant".
+            content: Inhoud van het bericht.
+        """
+        await add_message(user_id, role, content)
+
+    async def get_history(self, user_id: str) -> list[dict[str, Any]]:
+        """Geef de volledige history terug als lijst van {role, content} dicts (oudste eerst).
+
+        Args:
+            user_id: Unieke gebruikers-ID.
+
+        Returns:
+            Lijst van berichten zonder timestamp, geschikt voor Ollama chat API.
+        """
+        history = await get_chat_history(user_id)
+        return [{"role": m["role"], "content": m["content"]} for m in history]
+
+    async def clear(self, user_id: str) -> None:
+        """Verwijder alle berichten voor deze gebruiker.
+
+        Args:
+            user_id: Unieke gebruikers-ID.
+        """
+        await clear_chat_history(user_id)

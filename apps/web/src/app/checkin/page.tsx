@@ -66,7 +66,7 @@ export default function CheckinPage() {
     state.emotion === "gefrustreerd";
 
   return (
-    <div className="max-w-lg mx-auto space-y-8">
+    <div data-testid="checkin-form" className="max-w-lg mx-auto space-y-8">
       <div className="text-center space-y-1">
         <h1 className="text-2xl font-bold text-gray-900">Maandelijkse check-in 📋</h1>
         <p className="text-sm text-gray-500">Even inhecken hoe het gaat met jouw beleggingsreis.</p>

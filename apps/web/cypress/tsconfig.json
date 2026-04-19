@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES6",
+    "lib": ["ES6", "DOM"],
+    "types": ["cypress"],
+    "isolatedModules": false,
+    "noEmit": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
+}

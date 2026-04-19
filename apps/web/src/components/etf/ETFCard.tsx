@@ -58,6 +58,7 @@ export default function ETFCard({
 }: ETFCardProps) {
   return (
     <div
+      data-testid="etf-card"
       className={`card space-y-4 hover:shadow-md transition-all ${
         compareSelected ? "border-2 border-primary-500" : ""
       }`}
@@ -90,7 +91,7 @@ export default function ETFCard({
         <div className="text-sm">
           <span className="text-gray-400">Kosten (TER): </span>
           <span className="font-semibold text-gray-700">
-            {(ter * 100).toFixed(2)}%/jaar
+            {((ter ?? 0) * 100).toFixed(2)}%/jaar
           </span>
         </div>
         <div className="flex items-center gap-2">

@@ -38,3 +38,12 @@ class GetTop3ForProfileInput(BaseModel):
     horizon_years: int = Field(..., ge=1, le=40)
     monthly_budget: float = Field(..., ge=10)
     experience_level: ExperienceLevel = "geen"
+
+
+class GetTop3ForProfileInputV2(BaseModel):
+    """Invoerschema voor get_top3_for_profile met numeriek risicoprofiel."""
+
+    risk_level: int = Field(..., ge=1, le=7, description="Risicotolerantie (1=zeer defensief, 7=agressief)")
+    horizon_years: int = Field(..., ge=1, le=40, description="Beleggingshorizon in jaren")
+    monthly_investment: float = Field(..., ge=0, description="Maandelijks te beleggen bedrag in EUR")
+    preferred_category: Optional[str] = Field(None, description="Optionele voorkeurscategorie: aandelen, obligaties, gemengd")

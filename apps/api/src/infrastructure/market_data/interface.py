@@ -51,3 +51,28 @@ class MarketDataPort(ABC):
         Returns:
             Lijst van PricePoint, chronologisch gesorteerd.
         """
+
+    @abstractmethod
+    async def get_price(self, isin: str) -> dict:
+        """Haal de huidige koers op via ISIN, retourneert een standaard response-dict.
+
+        Args:
+            isin: ISIN-code van het ETF (bijv. 'IE00B4L5Y983').
+
+        Returns:
+            Standaard succes-response ``{ success, data: { isin, ticker, price,
+            currency, timestamp }, error }``.
+        """
+
+    @abstractmethod
+    async def get_history(self, isin: str, period: str = "1y") -> dict:
+        """Haal koershistorie op via ISIN, retourneert een standaard response-dict.
+
+        Args:
+            isin: ISIN-code van het ETF.
+            period: Periode string: '1mo', '3mo', '6mo', '1y', '2y', '5y'.
+
+        Returns:
+            Standaard succes-response ``{ success, data: { isin, ticker, period,
+            data: [{ date, close, volume }] }, error }``.
+        """

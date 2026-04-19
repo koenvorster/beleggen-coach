@@ -1,0 +1,48 @@
+{
+  "success": true,
+  "data": {
+    "count": 3,
+    "etfs": [
+      {
+        "isin": "IE00BK5BQT80",
+        "ticker": "VWCE",
+        "naam": "Vanguard FTSE All-World Acc",
+        "categorie": "Aandelen Wereld",
+        "regio": "Wereld",
+        "expense_ratio": 0.0022,
+        "aum_miljard_eur": 18.5,
+        "accumulating": true,
+        "volatility_3y": 0.14,
+        "beginner_score": 92,
+        "description": "Dekt zowel ontwikkelde als opkomende markten — meer dan 3.700 bedrijven wereldwijd. Accumulerend voor automatisch herbeleggen."
+      },
+      {
+        "isin": "IE00B4L5Y983",
+        "ticker": "IWDA",
+        "naam": "iShares MSCI World",
+        "categorie": "Aandelen Wereld",
+        "regio": "Wereld",
+        "expense_ratio": 0.0020,
+        "aum_miljard_eur": 65.0,
+        "accumulating": true,
+        "volatility_3y": 0.13,
+        "beginner_score": 88,
+        "description": "Belegt in ruim 1.600 grote en middelgrote bedrijven uit 23 ontwikkelde landen. Ideaal als kernpositie voor langetermijnbeleggers."
+      },
+      {
+        "isin": "IE00BDBRDM35",
+        "ticker": "AGGH",
+        "naam": "iShares Global Aggregate Bond",
+        "categorie": "Obligaties",
+        "regio": "Wereld",
+        "expense_ratio": 0.0010,
+        "aum_miljard_eur": 5.2,
+        "accumulating": true,
+        "volatility_3y": 0.05,
+        "beginner_score": 78,
+        "description": "Wereldwijde obligaties voor meer stabiliteit in een gemengde portefeuille. Reageert minder heftig op marktschommelingen."
+      }
+    ]
+  },
+  "error": null
+}

@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "plan-001",
+      "user_id": "dev-user-00000000",
+      "etf_isin": "IE00BK5BQT80",
+      "etf_ticker": "VWCE",
+      "monthly_amount": 200,
+      "years": 20,
+      "goal": "pensioen",
+      "risk_profile": "licht",
+      "created_at": "2025-01-15T10:00:00.000Z"
+    }
+  ],
+  "error": null
+}

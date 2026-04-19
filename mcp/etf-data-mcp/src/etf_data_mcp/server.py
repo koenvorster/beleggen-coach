@@ -73,16 +73,33 @@ TOOLS: list[Tool] = [
     ),
     Tool(
         name="get_top3_for_profile",
-        description="Geef de top 3 meest geschikte ETFs voor een gebruikersprofiel, met mensentaal-uitleg en kostenberekening.",
+        description="Geef de top 3 meest geschikte ETFs voor een gebruikersprofiel op basis van risicoscore, horizon en maandelijkse inleg.",
         inputSchema={
             "type": "object",
+            "required": ["risk_level", "horizon_years", "monthly_investment"],
             "properties": {
-                "risk_tolerance": {"type": "string", "enum": ["laag", "matig", "hoog"], "description": "Risicotolerantie van de gebruiker"},
-                "horizon_years": {"type": "integer", "minimum": 1, "maximum": 40, "description": "Beleggingshorizon in jaren"},
-                "monthly_budget": {"type": "number", "minimum": 10, "description": "Maandelijks inlegbedrag in EUR"},
-                "experience_level": {"type": "string", "enum": ["geen", "basis", "gevorderd"], "default": "geen", "description": "Beleggingservaring van de gebruiker"},
+                "risk_level": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 7,
+                    "description": "Risicotolerantie van de gebruiker (1=zeer defensief, 7=agressief)",
+                },
+                "horizon_years": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 40,
+                    "description": "Beleggingshorizon in jaren",
+                },
+                "monthly_investment": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Maandelijks te beleggen bedrag in EUR",
+                },
+                "preferred_category": {
+                    "type": "string",
+                    "description": "Optionele voorkeurscategorie: aandelen, obligaties, gemengd",
+                },
             },
-            "required": ["risk_tolerance", "horizon_years", "monthly_budget"],
         },
     ),
 ]

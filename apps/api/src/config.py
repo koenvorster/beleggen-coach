@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     debug: bool = False
     app_name: str = "Beleggingsapp API"
     app_version: str = "0.1.0"
+    environment: str = "development"
 
     # Ollama — lokale AI runtime
     ollama_base_url: str = "http://localhost:11434"

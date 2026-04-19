@@ -1,5 +1,6 @@
 """FastAPI applicatie-entry point."""
 import logging
+import time
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +18,9 @@ from .routers.market_data import router as market_data_router
 from .ai.client import get_client
 
 logger = logging.getLogger(__name__)
+
+# Set at startup; used to compute uptime_seconds in /health.
+startup_time: float = 0.0
 
 app = FastAPI(
     title=settings.app_name,
@@ -47,7 +51,10 @@ app.include_router(market_data_router, prefix="/api/v1")
 
 @app.on_event("startup")
 async def _startup() -> None:
-    """Initialiseer de Ollama client met de geconfigureerde URL."""
+    """Initialiseer de Ollama client en sla de starttijd op."""
+    global startup_time
+    startup_time = time.monotonic()
+
     from .ai import client as ai_client_module
     ai_client_module._client = ai_client_module.OllamaClient(
         base_url=settings.ollama_base_url,
@@ -62,9 +69,10 @@ async def _startup() -> None:
 
 @app.get("/health", tags=["health"])
 async def health() -> dict:
-    """Uitgebreide health check: API + DB + Redis."""
+    """Uitgebreide health check: API + DB + Redis + Ollama."""
     from .database import engine
     from .cache import ping_redis
+    from .ai import client as ai_client_module
 
     db_ok = False
     try:
@@ -76,13 +84,25 @@ async def health() -> dict:
 
     redis_ok = await ping_redis()
 
+    ollama_ok = False
+    try:
+        client = ai_client_module._client
+        if client is not None:
+            ollama_ok = await client.is_available()
+    except Exception:
+        ollama_ok = False
+
     overall = "ok" if db_ok and redis_ok else "degraded"
+    uptime = round(time.monotonic() - startup_time, 1) if startup_time else 0.0
 
     return {
         "status": overall,
         "version": settings.app_version,
+        "environment": settings.environment,
         "services": {
             "database": "ok" if db_ok else "unavailable",
             "redis": "ok" if redis_ok else "unavailable",
+            "ollama": "ok" if ollama_ok else "unavailable",
         },
+        "uptime_seconds": uptime,
     }

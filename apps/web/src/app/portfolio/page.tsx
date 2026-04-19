@@ -327,6 +327,7 @@ export default function PortfolioPage() {
         </div>
         <div className="flex gap-3 pt-1">
           <button
+            data-testid="add-position-button"
             onClick={handleAdd}
             disabled={saving}
             className="btn-primary flex items-center gap-2 disabled:opacity-60"

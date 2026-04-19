@@ -18,6 +18,7 @@ export default function UserAuthButton() {
 
   return (
     <button
+      data-testid="signin-button"
       onClick={() => signIn("keycloak")}
       className="text-sm text-gray-600 hover:text-primary-600"
     >

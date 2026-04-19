@@ -55,7 +55,29 @@ export default function DashboardPage() {
       });
   }, [profile]);
 
-  if (profile === undefined) return null;
+  if (profile === undefined) {
+    return (
+      <div className="space-y-8 animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-56" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="card py-4 flex flex-col items-center gap-2">
+              <div className="w-8 h-8 bg-gray-200 rounded-full" />
+              <div className="h-3 bg-gray-100 rounded w-14" />
+            </div>
+          ))}
+        </div>
+        <div className="grid sm:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="card space-y-2">
+              <div className="h-3 bg-gray-100 rounded w-20" />
+              <div className="h-6 bg-gray-200 rounded w-32" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (!profile) {
     return (

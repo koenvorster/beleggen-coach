@@ -1,0 +1,33 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "ci-001",
+      "user_id": "dev-user-00000000",
+      "month": "2025-01",
+      "invested": 200,
+      "emotional_state": "rustig",
+      "notes": "Goed gevoel deze maand.",
+      "created_at": "2025-01-31T18:00:00.000Z"
+    },
+    {
+      "id": "ci-002",
+      "user_id": "dev-user-00000000",
+      "month": "2025-02",
+      "invested": 200,
+      "emotional_state": "enthousiast",
+      "notes": "",
+      "created_at": "2025-02-28T18:00:00.000Z"
+    },
+    {
+      "id": "ci-003",
+      "user_id": "dev-user-00000000",
+      "month": "2025-03",
+      "invested": 0,
+      "emotional_state": "bezorgd",
+      "notes": "Markt ging flink omlaag.",
+      "created_at": "2025-03-31T18:00:00.000Z"
+    }
+  ],
+  "error": null
+}

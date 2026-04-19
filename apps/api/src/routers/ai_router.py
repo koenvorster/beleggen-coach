@@ -10,9 +10,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..database import get_db
 from ..ai import get_client, get_orchestrator, get_runner
 from ..ai.chat_memory import add_message, get_context_messages
+from ..ai.profile_context import build_system_prompt, load_profile_for_user
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/ai", tags=["ai"])
+
+_OLLAMA_UNAVAILABLE_NL = (
+    "Sorry, de AI-assistent is momenteel niet beschikbaar. "
+    "Controleer of Ollama actief is op je systeem, of probeer het later opnieuw."
+)
 
 
 # ─── Request / Response schemas ─────────────────────────────────────────────
@@ -84,6 +90,7 @@ async def ai_health() -> dict:
 @router.post("/chat", response_model=ChatResponse)
 async def chat(
     body: ChatRequest,
+    db: AsyncSession = Depends(get_db),
     x_user_id: str | None = Header(default=None, alias="X-User-Id"),
     user_id: str | None = Query(default=None),
 ) -> ChatResponse:
@@ -92,6 +99,7 @@ async def chat(
 
     Gebruik agent='gedragscoach', 'etf_adviseur', 'leer_assistent' of 'plan_generator'.
     Optioneel: stuur X-User-Id header of ?user_id= query param voor geheugen per gebruiker.
+    Het investeerdersprofiel en top-3 ETFs worden automatisch als context ingeladen.
     """
     resolved_user_id = x_user_id or user_id or "anonymous"
 
@@ -108,22 +116,36 @@ async def chat(
         (m.content for m in reversed(body.messages) if m.role == "user"), ""
     )
 
-    # Sla het gebruikersbericht op in Redis (faalt stil bij Redis-problemen)
+    # Laad investeerdersprofiel + top-3 ETFs voor dynamische system prompt
+    try:
+        profile_ctx = await load_profile_for_user(db, resolved_user_id)
+        dynamic_system_prompt = build_system_prompt(profile_ctx)
+    except Exception as profile_exc:
+        logger.warning(
+            "Profiel context laden mislukt (user=%s): %s — doorgaan zonder profiel",
+            resolved_user_id, profile_exc,
+        )
+        dynamic_system_prompt = None
+
+    # Sla het gebruikersbericht op in Redis en haal context op (faalt stil)
     try:
         await add_message(resolved_user_id, "user", last_user_message)
         context_messages = await get_context_messages(resolved_user_id)
     except Exception as mem_exc:
-        logger.warning("Chat memory fout (user=%s): %s — doorgaan zonder context", resolved_user_id, mem_exc)
+        logger.warning(
+            "Chat memory fout (user=%s): %s — doorgaan zonder context",
+            resolved_user_id, mem_exc,
+        )
         context_messages = [{"role": m.role, "content": m.content} for m in body.messages]
 
     try:
-        response = await agent.chat(context_messages)
+        response = await agent.chat(
+            context_messages,
+            system_prompt_override=dynamic_system_prompt,
+        )
     except Exception as exc:
         logger.error("Chat fout (agent=%s): %s", body.agent, exc)
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="AI service tijdelijk niet beschikbaar. Controleer of Ollama actief is.",
-        )
+        response = _OLLAMA_UNAVAILABLE_NL
 
     # Sla het assistant-antwoord op in Redis (faalt stil)
     try:

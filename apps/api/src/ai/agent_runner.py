@@ -91,6 +91,7 @@ class Agent:
         self,
         history: list[dict[str, str]],
         client: OllamaClient | None = None,
+        system_prompt_override: str | None = None,
     ) -> str:
         """
         Multi-turn gesprek met de agent.
@@ -98,6 +99,8 @@ class Agent:
         Args:
             history: Eerdere berichten in chat-formaat
             client: Optioneel een aangepaste Ollama client
+            system_prompt_override: Overschrijf de geconfigureerde system prompt.
+                Gebruik dit om dynamische context (profiel, ETFs) te injecteren.
 
         Returns:
             Het antwoord van de agent
@@ -105,9 +108,11 @@ class Agent:
         if client is None:
             client = get_client()
 
+        effective_system = system_prompt_override if system_prompt_override is not None else self.system_prompt
+
         messages: list[dict[str, str]] = []
-        if self.system_prompt:
-            messages.append({"role": "system", "content": self.system_prompt})
+        if effective_system:
+            messages.append({"role": "system", "content": effective_system})
         messages.extend(history)
 
         return await client.chat(
