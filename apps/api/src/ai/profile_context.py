@@ -141,6 +141,103 @@ Aanbevolen ETFs voor dit profiel (inclusief geschatte jaarlijkse kosten):
      een kern-portefeuille hebt van brede ETFs (80–90% van je portefeuille)"
    - Vermeld survivorship bias: succesvolle thema's zijn zichtbaar, geliquideerde
      thematische ETFs (bv. vroege internet-ETFs) zijn verdwenen uit de statistieken
+
+─── BELGISCHE EXPERTINZICHTEN ───
+
+7. GEERT NOELS (Econopolis) — Econoshock, Gigantisme, Capitalism XXL
+   - Kernboodschap: "Wie zich aanpast, overleeft. Wie stil blijft staan, wordt weggevaagd."
+   - Megatrends zijn structurele verschuivingen (demografie, energie, technologie, klimaat) die
+     decennialang invloed hebben op economie en beurzen — beleg in trends, niet in hypes
+   - ETFs zijn nuttige instrumenten maar vereisen selectiviteit: vermijd blinde trackers met
+     te grote concentratie in enkele megabedrijven (bv. >30% Apple/Microsoft in S&P 500)
+   - Gigantisme-risico: wat te groot wordt verliest bewegelijkheid en veerkracht.
+     Regulering kan grote technologiebedrijven treffen; brede spreiding beschermt hiertegen
+   - Duurzaamheid + spreiding + langetermijn = drie pijlers van verantwoord beleggen
+   - Onafhankelijk denken: doorprik financiele hypes, volg niet blindelings de massa
+
+8. MICHAEL VAN DROOGENBROECK (VRT NWS) — ABC van Beleggen (met Ewald Pironet)
+   - "Beleggen is geen sprint maar een marathon."
+   - Tien principes voor Belgische beginners:
+     1) Start zo vroeg mogelijk — samengestelde interest is het 8ste wereldwonder
+     2) Beleg enkel geld dat je op korte termijn niet nodig hebt
+     3) Spreid altijd: ETFs en indexfondsen zijn voor beginners idealer dan losse aandelen
+     4) Denk op lange termijn (10+ jaar): schommelingen zijn normaal en tijdelijk
+     5) Vermijd emotionele beslissingen bij beursdalingen
+     6) Hou rekening met Belgische kosten: TOB (0,35%), roerende voorheffing (30%), instapkosten
+     7) Beleg periodiek via DCA, niet eenmalig — spreid je instapmomenten
+     8) Kies eenvoudige producten: brede ETFs zijn transparanter dan actieve fondsen
+     9) Informeer jezelf kritisch: volg geen hypes, gebruik betrouwbare bronnen
+     10) Raadpleeg bij twijfel een erkende financieel adviseur (MiFID II)
+
+9. CHRIS SUGIRA (VRT MAX / Belfius) — De economie van je leven, Money Time podcast
+   - 50-30-20 regel: 50% vaste kosten / 30% vrije uitgaven / 20% sparen en beleggen
+   - Met 100 euro per maand consistent beleggen kun je op termijn een portefeuille opbouwen
+     van 462.000 euro — consistentie telt minstens zo hard als het startbedrag
+   - Gebruik aparte rekeningen: spaarrekening + beleggingsrekening + bufferrekening
+   - Begin met pensioensparen (30% belastingvermindering op 1020 euro per jaar), daarna ETFs
+   - Klein beginnen is beter dan niet beginnen: zelfs 50 euro per maand bouwt kapitaal op
+   - Fraudewaarschuwing: valse beleggingstips die zogenaamd van bekende experts komen
+     zijn een veelvoorkomende oplichterstruc — gebruik enkel officiele kanalen
+
+10. PAUL D'HOORE (oud-VRT beurscommentator) — Dividendfilosofie
+    - Kernboodschap: "Beurspaniek is vaak je vriend als je nog lang wilt beleggen."
+    - Dividendaandelen als bron van passief inkomen: bedrijven die consequent dividend verhogen
+      zijn vaak financieel gezond (AB InBev, Ageas, KBC, Elia als illustratie — geen advies)
+    - Herinvesteer dividenden voor maximaal langetermijnrendement via het compound effect
+    - Beleggen binnen je kennisgebied: begrijp wat je koopt voordat je investeert
+    - Vermijd te veel transacties: beurstaks (0,35%) en courtage eten rendement op
+    - Kwaliteit boven kwantiteit: 10 tot 15 degelijke posities beter dan 50 speculatieve
+
+─── ETF RESEARCH & DUE DILIGENCE ───
+
+11. VERPLICHTE CONTROLES BIJ ELKE ETF-BESPREKING
+    a) KID/EID Document (Key Information Document)
+       - Elke UCITS ETF heeft een verplicht KID/EID-document met de officiele risicoscore 1-7
+       - Verwijs gebruikers altijd naar het KID op de website van de aanbieder
+         (iShares: ishares.com, Vanguard: vanguard.com, Xtrackers: xtrackers.com)
+       - De risicoscore in het KID is gebaseerd op historische volatiliteit: 1=laag, 7=hoog
+       - Voorbeeld: VWCE risicoscore = 4/7, SXR8 (S&P 500) = 5/7, AGGH (obligaties) = 3/7
+
+    b) ISIN-code verificatie
+       - Gebruik altijd de ISIN-code om de exacte ETF te identificeren
+       - Dezelfde ETF kan op meerdere beurzen noteren met verschillende valuta
+       - Bekende ISIN-codes: VWCE = IE00BK5BQT80, IWDA = IE00B4L5Y983, SXR8 = IE00B5BMR087
+       - Beleg bij voorkeur in de EUR-genoteerde versie om wisselkoerskosten te vermijden
+
+    c) Fysiek vs. Synthetisch replicatie
+       - FYSIEK: ETF bezit de onderliggende aandelen effectief
+         * Volledige replicatie: koopt alle aandelen in de index
+         * Steekproef (sampling): koopt een representatieve subset
+         * Voordeel: transparant, geen tegenpartijrisico
+         * Nadeel: kan tracking error hebben bij grote indices
+       - SYNTHETISCH: ETF gebruikt een swap-contract met een tegenpartij
+         * Voordeel: lagere tracking error, toegang tot moeilijk bereikbare markten
+         * Nadeel: tegenpartijrisico (max 10% UCITS-grens)
+         * Let op: sommige synthetische ETFs hebben extra complexiteit
+       - Voor beginners: kies altijd fysiek replicerende ETFs (VWCE, IWDA, SXR8 zijn fysiek)
+
+12. AANBEVOLEN RESEARCH TOOLS (vernoem bij relevante vragen)
+    - JustETF (justetf.com/en-be): beste screener voor Europese ETFs
+      TER, fondsgrootte, replicatiemethode, domicilium, distributiepolitiek
+    - Curvo (curvo.eu/nl): Belgisch gericht, backtesting, rendementsvergelijking
+    - Morningstar (morningstar.be): star ratings, analistenrapporten, intrinsieke waarde
+    - Test-Aankoop Invest: onafhankelijke lijst 1000+ ETFs voor Belgische beleggers
+    - TradingView: technische analyse en koersgrafieken
+    - Sharesight: portfolio tracking met dividend en fiscale berekeningen voor DYI-beleggers
+    - Snowball Analytics: dividendstroom visualisatie voor inkomensbeleggers
+
+13. CRUCIALE ETF-KWALITEITSCRITERIA (checklist voor gebruikers)
+    Vernoem deze checklist wanneer iemand een specifieke ETF evalueert:
+    1) Fondsgrootte: min. 100 miljoen euro AUM (grotere fondsen zijn stabielere en minder
+       risico op liquidatie)
+    2) Handelsvolume: gemiddeld dagelijks volume > 1 miljoen euro (goede liquiditeit)
+    3) Tracking difference: verschil tussen ETF-rendement en index-rendement (lager = beter)
+    4) Domicilium: Ierland (IE) of Luxemburg (LU) zijn fiscaal gunstigst voor Belgische beleggers
+       vanwege de Belgisch-Ierse belastingverdragen (lagere dividendlekkage)
+    5) Distributiepolitiek: accumulerend (kapitaliserende) ETFs zijn fiscaal gunstiger in Belgie
+       want geen 30% roerende voorheffing op dividenduitkering
+    6) Replicatiemethode: fysiek replicerend heeft de voorkeur voor beginners
+    7) TER: lager is beter, maar tracking difference is uiteindelijk belangrijker dan TER alleen
 """
 
 # ─── ETF scoring ─────────────────────────────────────────────────────────────

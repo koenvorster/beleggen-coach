@@ -13,7 +13,7 @@ interface Bron {
   niveau: Niveau;
 }
 
-type Categorie = "Alle" | "Podcasts" | "YouTube" | "Websites" | "Communities" | "Boeken";
+type Categorie = "Alle" | "Podcasts" | "YouTube" | "Websites" | "Tools" | "Communities" | "Boeken" | "Experten";
 
 const podcasts: Bron[] = [
   {
@@ -327,12 +327,155 @@ const boeken: Bron[] = [
   },
 ];
 
+const tools: Bron[] = [
+  {
+    naam: "JustETF",
+    emoji: "🔍",
+    beschrijving:
+      "De onbetwiste nr. 1 voor Europese beleggers. Filter op TER, fondsgrootte, replicatiemethode, domicilium en distributiepolitiek. Onmisbaar om de juiste ETF te kiezen.",
+    tags: ["Europees", "ETF", "Screener", "Gratis"],
+    url: "https://www.justetf.com/en-be/",
+    niveau: "Beginner",
+  },
+  {
+    naam: "Curvo Backtester",
+    emoji: "📉",
+    beschrijving:
+      "Simuleer historische rendementen van je ETF-portefeuille van 2000 tot nu. Belgisch gericht, vergelijkt op rendement, kosten en duurzaamheid.",
+    tags: ["Belgisch", "ETF", "Backtesting", "Gratis"],
+    url: "https://backtest.curvo.eu",
+    niveau: "Beginner",
+  },
+  {
+    naam: "Test-Aankoop Invest",
+    emoji: "🏷️",
+    beschrijving:
+      "Onafhankelijke Belgische ETF-lijst van Test-Aankoop met meer dan 1.000 producten. Nuttig voor rendement- en risicoanalyse zonder commercieel belang.",
+    tags: ["Belgisch", "ETF", "Onafhankelijk", "Analyse"],
+    url: "https://www.test-aankoop.be/invest",
+    niveau: "Gevorderd",
+  },
+  {
+    naam: "Morningstar",
+    emoji: "⭐",
+    beschrijving:
+      "Diepgaande star ratings en analistenrapporten over fondsen en ETFs. Sterk voor het analyseren van intrinsieke waarde en langetermijnkwaliteit.",
+    tags: ["Internationaal", "ETF", "Analyse", "Ratings"],
+    url: "https://www.morningstar.be",
+    niveau: "Gevorderd",
+  },
+  {
+    naam: "TradingView",
+    emoji: "📊",
+    beschrijving:
+      "De standaard voor technische analyse en koersgrafieken. Uitgebreide data over aandelen, ETFs en indices wereldwijd. Gratis basisversie.",
+    tags: ["Internationaal", "Grafieken", "Technisch", "Gratis"],
+    url: "https://www.tradingview.com",
+    niveau: "Gevorderd",
+  },
+  {
+    naam: "Sharesight",
+    emoji: "📋",
+    beschrijving:
+      "Uitstekend voor het bijhouden van je portfolio als doe-het-zelf belegger. Tracked dividend, fiscale gevolgen en performance nauwkeurig.",
+    tags: ["Portfolio", "Dividend", "Fiscaal", "DYI"],
+    url: "https://www.sharesight.com",
+    niveau: "Gevorderd",
+  },
+  {
+    naam: "Snowball Analytics",
+    emoji: "❄️",
+    beschrijving:
+      "Gespecialiseerd voor dividendbeleggers. Visualiseer je inkomstenstroom, dividenddistributie en groei over tijd.",
+    tags: ["Dividend", "Portfolio", "Visualisatie"],
+    url: "https://snowball-analytics.com",
+    niveau: "Gevorderd",
+  },
+  {
+    naam: "ETFdb.com",
+    emoji: "🗄️",
+    beschrijving:
+      "Uitgebreide screeningtools en real-time nieuws over wereldwijde ETFs. Realtime Ratings op basis van liquiditeit, kosten en volatiliteit.",
+    tags: ["Internationaal", "ETF", "Screener", "Ratings"],
+    url: "https://etfdb.com",
+    niveau: "Expert",
+  },
+  {
+    naam: "Finviz",
+    emoji: "🗺️",
+    beschrijving:
+      "Uitstekend voor het snel screenen van aandelen en het visualiseren van markttrends via heatmaps. Ideaal om snel een marktoverzicht te krijgen.",
+    tags: ["Internationaal", "Aandelen", "Heatmap", "Screener"],
+    url: "https://finviz.com",
+    niveau: "Expert",
+  },
+];
+
+const experten: Bron[] = [
+  {
+    naam: "Geert Noels — Econopolis",
+    emoji: "🏰",
+    beschrijving:
+      "Belgische econoom en oprichter van Econopolis. Auteur van Econoshock, Gigantisme en Capitalism XXL. Pleit voor langetermijn, megatrends en onafhankelijk denken. Kritisch over blinde ETF-trackers met te veel concentratie.",
+    tags: ["Belgisch", "Econoom", "Langetermijn", "Megatrends"],
+    url: "https://www.econopolis.be",
+    niveau: "Gevorderd",
+  },
+  {
+    naam: "Michaël Van Droogenbroeck — VRT NWS",
+    emoji: "📺",
+    beschrijving:
+      "Voornaamste financieel journalist bij VRT NWS. Co-auteur van 'ABC van Beleggen' (met Ewald Pironet) — het toonaangevende Belgische beginners-boek. Kernboodschap: 'Beleggen is geen sprint maar een marathon.'",
+    tags: ["Belgisch", "VRT", "Beginner", "Boek"],
+    url: "https://www.vrt.be/vrtnws/nl/",
+    niveau: "Beginner",
+  },
+  {
+    naam: "Chris Sugira — VRT MAX / Money Time",
+    emoji: "🎙️",
+    beschrijving:
+      "Fondsenanalist (Belfius) en financieel expert bij VRT. Auteur van 'De economie van je leven'. Bekend van 50-30-20 regel en Money Time podcast. Focust op toegankelijke financiële educatie voor iedereen.",
+    tags: ["Belgisch", "VRT", "Podcast", "Beginner", "50-30-20"],
+    url: "https://www.vrt.be/vrtmax/",
+    niveau: "Beginner",
+  },
+  {
+    naam: "Paul D'Hoore — Dividendfilosofie",
+    emoji: "💰",
+    beschrijving:
+      "Voormalig vaste beurscommentator VRT (tot 2007). Bekend om zijn dividendfilosofie: investeer in kwaliteitsbedrijven die consequent dividend verhogen en herbeleggen. 'Beurspaniek is vaak je vriend.'",
+    tags: ["Belgisch", "Dividend", "Langetermijn", "Kwaliteit"],
+    url: "https://www.bol.com/nl/nl/s/paul-d-hoore/",
+    niveau: "Gevorderd",
+  },
+  {
+    naam: "Ben Felix — Common Sense Investing",
+    emoji: "🔬",
+    beschrijving:
+      "CFA-charterholder en portfoliomanager. Meest evidence-based ETF-kanaal op YouTube. Baseert alles op academisch onderzoek. Onmisbaar voor wie echt wil begrijpen waarom passief beleggen werkt.",
+    tags: ["Engels", "ETF", "Academisch", "Expert"],
+    url: "https://www.youtube.com/@BenFelixCSI",
+    niveau: "Expert",
+  },
+  {
+    naam: "JL Collins — The Simple Path to Wealth",
+    emoji: "📗",
+    beschrijving:
+      "Amerikaanse belegger die de kracht van één brede index-ETF (VTSAX-equivalent) verdedigt. Zijn 'stock series' blog is gratis en tijdloos. Kernboodschap: simpel is beter.",
+    tags: ["Engels", "ETF", "FIRE", "Simpel"],
+    url: "https://jlcollinsnh.com",
+    niveau: "Beginner",
+  },
+];
+
 const alleBronnen: Record<Exclude<Categorie, "Alle">, Bron[]> = {
   Podcasts: podcasts,
   YouTube: youtube,
   Websites: websites,
+  Tools: tools,
   Communities: communities,
   Boeken: boeken,
+  Experten: experten,
 };
 
 const tabConfig: { label: Categorie; emoji: string }[] = [
@@ -340,8 +483,10 @@ const tabConfig: { label: Categorie; emoji: string }[] = [
   { label: "Podcasts", emoji: "🎙️" },
   { label: "YouTube", emoji: "📺" },
   { label: "Websites", emoji: "🌐" },
+  { label: "Tools", emoji: "🛠️" },
   { label: "Communities", emoji: "👥" },
   { label: "Boeken", emoji: "📚" },
+  { label: "Experten", emoji: "🎓" },
 ];
 
 const niveauKleuren: Record<Niveau, string> = {
@@ -355,6 +500,11 @@ function tagKleur(tag: string): string {
   if (tag === "ETF") return "bg-orange-100 text-orange-800";
   if (tag === "Beginner") return "bg-green-100 text-green-800";
   if (tag === "FIRE") return "bg-red-100 text-red-800";
+  if (tag === "Gratis") return "bg-emerald-100 text-emerald-800";
+  if (tag === "Screener") return "bg-violet-100 text-violet-800";
+  if (tag === "Dividend") return "bg-yellow-100 text-yellow-800";
+  if (tag === "VRT") return "bg-indigo-100 text-indigo-800";
+  if (tag === "Academisch") return "bg-purple-100 text-purple-800";
   return "bg-gray-100 text-gray-700";
 }
 
