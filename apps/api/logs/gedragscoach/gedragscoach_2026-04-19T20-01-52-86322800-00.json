@@ -1,0 +1,12 @@
+{
+  "id": "gedragscoach_2026-04-19T20-01-52-86322800-00",
+  "timestamp": "2026-04-19T20:01:52.863228+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Wat is het verschil tussen IWDA en VWCE?",
+  "agent_output": "Sorry, de AI-assistent is momenteel niet beschikbaar. Controleer of Ollama actief is op je systeem, of probeer het later opnieuw.",
+  "metadata": {
+    "agent": "gedragscoach",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

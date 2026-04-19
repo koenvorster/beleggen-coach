@@ -111,6 +111,42 @@ class YFinanceAdapter(MarketDataPort):
             )
         return points
 
+    async def get_index_info(self, ticker: str) -> dict | None:
+        """Haal actuele koers en dagwijziging op voor een index- of ETF-ticker.
+
+        Args:
+            ticker: yfinance ticker (bijv. '^GSPC', 'IWDA.AS').
+
+        Returns:
+            Dict met ticker, huidige_koers, wijziging_pct, wijziging_eur, valuta
+            of None bij fout.
+        """
+        try:
+            return await asyncio.to_thread(self._fetch_index_info, ticker)
+        except Exception as exc:
+            logger.warning("yfinance get_index_info fout voor %s: %s", ticker, exc)
+            return None
+
+    def _fetch_index_info(self, ticker: str) -> dict | None:
+        t = yf.Ticker(ticker)
+        info = t.fast_info
+        price = getattr(info, "last_price", None)
+        prev_close = getattr(info, "previous_close", None)
+        currency = getattr(info, "currency", "EUR")
+        if price is None:
+            return None
+        price_f = float(price)
+        prev_f = float(prev_close) if prev_close else None
+        wijziging_eur = (price_f - prev_f) if prev_f else 0.0
+        wijziging_pct = (wijziging_eur / prev_f * 100) if prev_f else 0.0
+        return {
+            "ticker": ticker,
+            "huidige_koers": round(price_f, 4),
+            "wijziging_pct": round(wijziging_pct, 4),
+            "wijziging_eur": round(wijziging_eur, 4),
+            "valuta": currency,
+        }
+
     async def get_price(self, isin: str) -> dict:
         """Haal de huidige koers op via ISIN.
 

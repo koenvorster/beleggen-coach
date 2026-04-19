@@ -1,0 +1,12 @@
+{
+  "id": "gedragscoach_2026-04-19T20-02-03-68067700-00",
+  "timestamp": "2026-04-19T20:02:03.680677+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Hoe werkt rente op rente?",
+  "agent_output": "Sorry, de AI-assistent is momenteel niet beschikbaar. Controleer of Ollama actief is op je systeem, of probeer het later opnieuw.",
+  "metadata": {
+    "agent": "gedragscoach",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

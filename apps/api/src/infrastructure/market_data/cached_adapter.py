@@ -76,6 +76,28 @@ class CachedMarketDataAdapter(MarketDataPort):
             await cache_set(key, serializable, ttl_seconds=HISTORY_TTL)
         return result
 
+    async def get_index_info(self, ticker: str) -> dict | None:
+        """Geef actuele koers en dagwijziging terug voor een index-ticker, gecached.
+
+        Cache key: ``market:index:{ticker}``, TTL: 15 minuten.
+
+        Args:
+            ticker: yfinance ticker (bijv. '^GSPC', 'IWDA.AS').
+
+        Returns:
+            Dict of None bij fout.
+        """
+        key = f"market:index:{ticker}"
+        cached = await cache_get(key)
+        if cached is not None:
+            logger.debug("Cache hit voor %s", key)
+            return cached
+        logger.debug("Cache miss voor %s", key)
+        result = await self._inner.get_index_info(ticker)
+        if result:
+            await cache_set(key, result, ttl_seconds=PRICE_TTL)
+        return result
+
     async def get_price(self, isin: str) -> dict:
         """Geef de huidige koers terug via ISIN, gecached in Redis.
 

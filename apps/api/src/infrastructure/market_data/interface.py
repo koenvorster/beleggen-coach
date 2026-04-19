@@ -65,6 +65,18 @@ class MarketDataPort(ABC):
         """
 
     @abstractmethod
+    async def get_index_info(self, ticker: str) -> dict | None:
+        """Haal actuele koers en dagwijziging op voor een index- of ETF-ticker.
+
+        Args:
+            ticker: yfinance ticker (bijv. '^GSPC', 'IWDA.AS').
+
+        Returns:
+            Dict met ticker, huidige_koers, wijziging_pct, wijziging_eur, valuta
+            of None bij fout.
+        """
+
+    @abstractmethod
     async def get_history(self, isin: str, period: str = "1y") -> dict:
         """Haal koershistorie op via ISIN, retourneert een standaard response-dict.
 

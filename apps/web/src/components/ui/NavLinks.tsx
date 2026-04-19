@@ -7,6 +7,7 @@ import clsx from "clsx";
 const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/etfs", label: "ETF's" },
+  { href: "/markt", label: "Markt" },
   { href: "/plan", label: "Mijn Plan" },
   { href: "/portfolio", label: "Portfolio" },
   { href: "/chat", label: "AI Coach" },

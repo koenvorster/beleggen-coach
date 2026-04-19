@@ -1,3 +1,19 @@
+// ─── Marktdata interfaces ─────────────────────────────────────────────────────
+
+export interface MarktIndex {
+  ticker: string;
+  naam: string;
+  huidige_koers: number;
+  wijziging_pct: number;
+  wijziging_eur: number;
+  valuta: string;
+}
+
+export interface KoersDataPunt {
+  datum: string;
+  koers: number;
+}
+
 // ─── Backend datamodel ────────────────────────────────────────────────────────
 
 /** ETF zoals de FastAPI backend hem teruggeeft. */
@@ -165,6 +181,19 @@ async function apiFetch<T>(
 // ─── API-client ───────────────────────────────────────────────────────────────
 
 export const api = {
+  /** Marktdata eindpunten */
+  market: {
+    /** Haal actuele koersen op voor bekende indices en ETFs. */
+    indices: (): Promise<MarktIndex[]> =>
+      apiFetch<MarktIndex[]>("/market/indices"),
+
+    /** Haal koershistorie op voor een ticker. */
+    history: (ticker: string, periode = "1y"): Promise<KoersDataPunt[]> =>
+      apiFetch<{ success: boolean; data: KoersDataPunt[]; error: null }>(
+        `/market/history/${encodeURIComponent(ticker)}?periode=${periode}`
+      ).then((r) => r.data ?? []),
+  },
+
   /** ETF-eindpunten */
   etfs: {
     /** Haal lijst op. Alle parameters zijn optioneel. */
