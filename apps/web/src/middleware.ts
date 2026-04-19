@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PROTECTED_ROUTES = ["/dashboard", "/portfolio", "/analytics", "/checkin", "/plan"];
+const PROTECTED_ROUTES = [
+  "/dashboard",
+  "/portfolio",
+  "/analytics",
+  "/checkin",
+  "/plan",
+  "/admin",
+];
 
-// Auth is only active when Keycloak env vars are set
 const AUTH_ENABLED =
   Boolean(process.env.KEYCLOAK_CLIENT_ID) &&
   Boolean(process.env.KEYCLOAK_CLIENT_SECRET);
@@ -16,12 +22,11 @@ export default async function middleware(req: NextRequest) {
   );
   if (!isProtected) return NextResponse.next();
 
-  // Dynamisch importeren zodat NextAuth niet initialiseert bij startup
-  const { auth } = await import("@/auth");
+  const { auth } = await import("@/_auth_keycloak");
   const session = await auth();
   if (!session) {
-    const signInUrl = new URL("/api/auth/signin", req.url);
-    signInUrl.searchParams.set("callbackUrl", req.url);
+    const signInUrl = new URL("/sign-in", req.url);
+    signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
     return NextResponse.redirect(signInUrl);
   }
 
@@ -29,7 +34,7 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Sluit /api/auth/* uit — NextAuth moet zijn eigen callback afhandelen
+  // Sluit api/auth/* uit zodat NextAuth callbacks ongestoord verlopen
   matcher: ["/((?!api/auth|.*\\..*|_next).*)", "/"],
 };
 

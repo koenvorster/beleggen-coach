@@ -7,6 +7,29 @@ import datetime
 from .database import Base
 
 
+class ETF(Base):
+    """ETF-product met alle relevante metagegevens."""
+
+    __tablename__ = "etfs"
+
+    isin: Mapped[str] = mapped_column(String(12), primary_key=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    category: Mapped[str] = mapped_column(String(50), nullable=False)
+    ter: Mapped[float] = mapped_column(Numeric(6, 4), nullable=False)
+    risk_level: Mapped[int] = mapped_column(Integer, nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, server_default="EUR")
+    benchmark: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    fund_size_m: Mapped[float | None] = mapped_column(Numeric(14, 2), nullable=True)
+    ytd_return: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
+    one_year_return: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
+    three_year_return: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
+    inception_date: Mapped[datetime.date | None] = mapped_column(Date, nullable=True)
+    is_accumulating: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="true")
+    replication_method: Mapped[str] = mapped_column(String(20), nullable=False, server_default="physical")
+    domicile: Mapped[str] = mapped_column(String(2), nullable=False, server_default="IE")
+
+
 class User(Base):
     __tablename__ = "users"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

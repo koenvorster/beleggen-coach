@@ -1,12 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { api } from "@/lib/api";
+
+const DEV_USER_ID = "dev-user-00000000";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+}
+
+interface BackendChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  timestamp?: string;
 }
 
 const SUGGESTED_QUESTIONS = [
@@ -31,6 +40,32 @@ export default function ChatPage() {
   const [isStreaming, setIsStreaming] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Laad chatgeschiedenis bij het openen van de pagina
+  useEffect(() => {
+    api.chat
+      .getHistory(DEV_USER_ID)
+      .then((res) => {
+        const raw = res.data?.messages ?? [];
+        if (raw.length === 0) return;
+
+        const history: Message[] = (raw as BackendChatMessage[])
+          .filter((m) => m.role === "user" || m.role === "assistant")
+          .map((m, i) => ({
+            id: `history-${i}`,
+            role: m.role,
+            content: m.content,
+            timestamp: m.timestamp ? new Date(m.timestamp) : new Date(),
+          }));
+
+        if (history.length > 0) {
+          setMessages([INITIAL_MESSAGE, ...history]);
+        }
+      })
+      .catch(() => {
+        // Geen geschiedenis beschikbaar — beginnen met lege chat is prima
+      });
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -59,21 +94,15 @@ export default function ChatPage() {
     setInput("");
     setIsStreaming(true);
 
-    // Build history excluding the initial greeting (it's not part of API context)
     const apiMessages = [...messages, userMsg]
       .filter((m) => m.id !== "initial")
       .map((m) => ({ role: m.role, content: m.content }));
 
     try {
-      const userId =
-        typeof window !== "undefined"
-          ? (localStorage.getItem("beleggen_user_id") ?? "anonymous")
-          : "anonymous";
-
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: apiMessages, userId }),
+        body: JSON.stringify({ messages: apiMessages, userId: DEV_USER_ID }),
       });
 
       if (!response.ok || !response.body) {

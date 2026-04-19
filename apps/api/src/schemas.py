@@ -1,13 +1,16 @@
 """Pydantic schemas voor request/response validatie."""
-from pydantic import BaseModel, Field, EmailStr, UUID4
+import datetime  # noqa: E402
+import re
+from decimal import Decimal
+from pydantic import BaseModel, ConfigDict, Field, EmailStr, UUID4, field_validator
 from typing import Optional, Literal
 
 GoalType = Literal["pensioen", "huis_kopen", "studie_kind", "noodfonds", "vermogen_opbouwen", "anders"]
 RiskTolerance = Literal["laag", "matig", "hoog"]
 ExperienceLevel = Literal["geen", "basis", "gevorderd"]
+ETFCategory = Literal["equity", "bond", "mixed", "real_estate", "commodity"]
+ReplicationMethod = Literal["physical", "synthetic"]
 
-
-# ─── User ────────────────────────────────────────────────────────────────────
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -91,7 +94,6 @@ class PlanResponse(BaseModel):
 
 
 # ─── Portfolio ────────────────────────────────────────────────────────────────
-import datetime  # noqa: E402
 
 
 class PortfolioPositionCreate(BaseModel):
@@ -134,4 +136,87 @@ class CheckInResponse(BaseModel):
     notes: Optional[str]
     coach_response: Optional[str]
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ─── ETF ─────────────────────────────────────────────────────────────────────
+
+class ETFCreate(BaseModel):
+    """Schema voor het aanmaken van een nieuw ETF."""
+
+    isin: str = Field(..., min_length=12, max_length=12)
+    name: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = Field(None, max_length=2000)
+    category: ETFCategory
+    ter: float = Field(..., ge=0.0, le=5.0, description="Total Expense Ratio als decimaal (bijv. 0.20)")
+    risk_level: int = Field(..., ge=1, le=7)
+    currency: str = Field("EUR", min_length=3, max_length=3)
+    benchmark: Optional[str] = Field(None, max_length=255)
+    fund_size_m: Optional[float] = Field(None, ge=0)
+    ytd_return: Optional[float] = None
+    one_year_return: Optional[float] = None
+    three_year_return: Optional[float] = None
+    inception_date: Optional[datetime.date] = None
+    is_accumulating: bool = True
+    replication_method: ReplicationMethod = "physical"
+    domicile: str = Field("IE", min_length=2, max_length=2)
+
+    @field_validator("isin")
+    @classmethod
+    def validate_isin(cls, v: str) -> str:
+        """Valideer ISIN-formaat: 12 tekens, begint met 2-letterige landcode."""
+        if not re.match(r"^[A-Z]{2}[A-Z0-9]{10}$", v):
+            raise ValueError("ISIN moet 12 tekens zijn en beginnen met een 2-letterige landcode (bijv. IE00B4L5Y983).")
+        return v
+
+
+class ETFResponse(BaseModel):
+    """Schema voor ETF-response."""
+
+    isin: str
+    name: str
+    description: Optional[str]
+    category: str
+    ter: float
+    risk_level: int
+    currency: str
+    benchmark: Optional[str]
+    fund_size_m: Optional[float]
+    ytd_return: Optional[float]
+    one_year_return: Optional[float]
+    three_year_return: Optional[float]
+    inception_date: Optional[datetime.date]
+    is_accumulating: bool
+    replication_method: str
+    domicile: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ─── Plan (update) ────────────────────────────────────────────────────────────
+
+class PlanUpdate(BaseModel):
+    """Schema voor het bijwerken van een bestaand beleggingsplan."""
+
+    monthly_amount: Optional[float] = Field(None, ge=10)
+    allocation: Optional[list[dict]] = None
+    rationale: Optional[str] = None
+    risk_notes: Optional[str] = None
+
+
+# ─── Portfolio summary ────────────────────────────────────────────────────────
+
+class CategoryAllocation(BaseModel):
+    """Allocatie per ETF-categorie."""
+
+    category: str
+    total_invested: float
+    percentage: float
+
+
+class PortfolioSummaryResponse(BaseModel):
+    """Overzicht van de volledige portefeuille."""
+
+    total_invested: float
+    position_count: int
+    allocations: list[CategoryAllocation]

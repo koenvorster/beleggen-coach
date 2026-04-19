@@ -17,9 +17,9 @@ class Settings(BaseSettings):
     ollama_timeout: float = 120.0
 
     # Keycloak — authenticatie
-    keycloak_issuer: str = "http://localhost:8080/realms/beleggencoach"
-    keycloak_client_id: str = "beleggencoach-api"
-    auth_enabled: bool = False
+    keycloak_issuer: str = "http://localhost:8081/realms/beleggencoach"
+    keycloak_client_id: str = "beleggencoach"
+    auth_enabled: bool = True
 
 
 settings = Settings()

@@ -11,8 +11,11 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { RefreshCw, Save } from "lucide-react";
 import { loadProfile, getSuggestedETF, riskLabel, type UserProfile } from "@/lib/profile";
-import { api, type BackendETF } from "@/lib/api";
+import { api, type BackendETF, type Plan } from "@/lib/api";
+
+const USER_ID = "dev-user-00000000";
 
 const DEFAULT_MONTHLY = 200;
 const DEFAULT_YEARS = 20;
@@ -67,16 +70,26 @@ const RISK_EXPLANATIONS: Record<UserProfile["risk"], string> = {
     "Jouw profiel: groeigericht. Aandelen-ETF's met hoge spreiding zijn logisch voor de lange termijn.",
 };
 
+const GOAL_LABELS: Record<UserProfile["goal"], string> = {
+  pensioen: "Pensioen opbouwen",
+  huis: "Huis kopen",
+  studie: "Studie van mijn kind",
+  vermogen: "Vermogen opbouwen",
+};
+
 export default function PlanPage() {
   const [profile, setProfile] = useState<UserProfile | null | undefined>(undefined);
   const [suggestedETF, setSuggestedETF] = useState<BackendETF | null>(null);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [plansLoading, setPlansLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Laad profiel uit localStorage (migratie naar backend is een aparte taak)
   useEffect(() => {
     setProfile(loadProfile());
   }, []);
 
-  // Haal ETF-data op zodra profiel bekend is
   useEffect(() => {
     const ticker = profile ? getSuggestedETF(profile.risk) : "VWCE";
 
@@ -87,10 +100,49 @@ export default function PlanPage() {
         setSuggestedETF(match);
       })
       .catch(() => {
-        // Graceful degradation — ETF-sectie wordt weggelaten bij API-fout
         setSuggestedETF(null);
       });
   }, [profile]);
+
+  async function loadPlans() {
+    setPlansLoading(true);
+    try {
+      const data = await api.plans.list(USER_ID);
+      setPlans(data);
+    } catch {
+      // Graceful degradation — toon lege lijst bij fout
+      setPlans([]);
+    } finally {
+      setPlansLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadPlans();
+  }, []);
+
+  async function handleSavePlan() {
+    if (!profile || !suggestedETF) return;
+    setSaving(true);
+    setSaveError(null);
+    setSavedSuccess(false);
+    try {
+      const newPlan = await api.plans.create(USER_ID, {
+        etf_isin: suggestedETF.isin,
+        etf_ticker: suggestedETF.ticker,
+        monthly_amount: profile.monthly,
+        years: profile.years,
+        goal: profile.goal,
+        risk_profile: profile.risk,
+      });
+      setPlans((prev) => [newPlan, ...prev]);
+      setSavedSuccess(true);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Plan opslaan mislukt");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   if (profile === undefined) return null;
 
@@ -187,7 +239,7 @@ export default function PlanPage() {
         </ul>
       </div>
 
-      {/* Suggested ETF — graceful degradation als API niet reageert */}
+      {/* Suggested ETF */}
       {suggestedETF && (
         <div className="card space-y-3">
           <h3 className="font-semibold text-gray-900">Passend ETF voor jouw profiel</h3>
@@ -199,12 +251,44 @@ export default function PlanPage() {
               </p>
               <p className="text-sm text-gray-500 mt-1">{suggestedETF.description}</p>
               <p className="text-xs text-gray-400 mt-1">
-                TER: {(suggestedETF.expense_ratio * 100).toFixed(2)}% ·{" "}
-                AUM: €{suggestedETF.aum_miljard_eur.toFixed(1)} mrd ·{" "}
+                TER: {((suggestedETF.expense_ratio ?? 0) * 100).toFixed(2)}% ·{" "}
+                {suggestedETF.aum_miljard_eur != null && (
+                  <>AUM: €{suggestedETF.aum_miljard_eur.toFixed(1)} mrd ·{" "}</>
+                )}
                 {suggestedETF.accumulating ? "Accumulerend" : "Uitkerend"}
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Save plan */}
+      {profile && (
+        <div className="card space-y-4">
+          <h3 className="font-semibold text-gray-900">💾 Plan opslaan</h3>
+          <p className="text-sm text-gray-500">
+            Sla dit plan op zodat je het later kunt terugvinden en vergelijken.
+          </p>
+
+          {saveError && (
+            <p className="text-sm text-red-600">⚠️ {saveError}</p>
+          )}
+          {savedSuccess && (
+            <p className="text-sm text-green-600">✅ Plan succesvol opgeslagen!</p>
+          )}
+
+          <button
+            onClick={handleSavePlan}
+            disabled={saving || !suggestedETF}
+            className="btn-primary flex items-center gap-2 disabled:opacity-60"
+          >
+            {saving ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            {saving ? "Opslaan…" : "Plan opslaan"}
+          </button>
         </div>
       )}
 
@@ -218,6 +302,43 @@ export default function PlanPage() {
           </p>
         </div>
       )}
+
+      {/* Saved plans list */}
+      <div className="card space-y-4">
+        <h3 className="font-semibold text-gray-900">📋 Opgeslagen plannen</h3>
+        {plansLoading ? (
+          <div className="flex items-center gap-2 text-gray-400 text-sm py-4">
+            <RefreshCw className="w-4 h-4 animate-spin" />
+            Plannen laden…
+          </div>
+        ) : plans.length === 0 ? (
+          <p className="text-sm text-gray-400 py-4">
+            Nog geen plannen opgeslagen. Gebruik de knop hierboven om je eerste plan op te slaan.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {plans.map((plan) => (
+              <div
+                key={plan.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 bg-gray-50 rounded-xl"
+              >
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-gray-900">
+                    {plan.etf_ticker} · €{plan.monthly_amount}/maand · {plan.years} jaar
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Doel: {GOAL_LABELS[plan.goal as UserProfile["goal"]] ?? plan.goal} ·
+                    Risico: {plan.risk_profile}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-400 shrink-0">
+                  {new Date(plan.created_at).toLocaleDateString("nl-BE")}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Discipline tips */}
       <div className="card space-y-3">

@@ -2,18 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Trash2, PlusCircle } from "lucide-react";
+import { Trash2, PlusCircle, RefreshCw } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { MOCK_ETFS } from "@/lib/mock-etfs";
+import { api, type PortfolioPosition } from "@/lib/api";
 
-interface Position {
-  id: string;
-  ticker: string;
-  etfName: string;
-  units: number;
-  avgBuyPrice: number;
-  buyDate: string;
-}
+const USER_ID = "dev-user-00000000";
 
 const CURRENT_PRICES: Record<string, number> = {
   IWDA: 89.42,
@@ -33,8 +27,6 @@ const PIE_COLORS = [
   "#06b6d4", "#f97316", "#84cc16", "#ec4899", "#6366f1",
 ];
 
-const STORAGE_KEY = "beleggen_portfolio";
-
 function fmt(n: number) {
   return new Intl.NumberFormat("nl-BE", {
     style: "currency",
@@ -48,8 +40,10 @@ function fmtPct(n: number) {
 }
 
 export default function PortfolioPage() {
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [mounted, setMounted] = useState(false);
+  const [positions, setPositions] = useState<PortfolioPosition[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   // Form state
   const [ticker, setTicker] = useState(MOCK_ETFS[0].ticker);
@@ -57,65 +51,76 @@ export default function PortfolioPage() {
   const [avgBuyPrice, setAvgBuyPrice] = useState<string>("");
   const [buyDate, setBuyDate] = useState<string>(new Date().toISOString().split("T")[0]);
 
-  useEffect(() => {
-    setMounted(true);
+  async function loadPositions() {
+    setLoading(true);
+    setError(null);
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setPositions(JSON.parse(raw) as Position[]);
-    } catch {
-      // ignore parse errors
+      const data = await api.portfolio.get(USER_ID);
+      setPositions(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Kon de portefeuille niet laden");
+    } finally {
+      setLoading(false);
     }
-  }, []);
-
-  function save(updated: Position[]) {
-    setPositions(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   }
 
-  function handleAdd() {
+  useEffect(() => {
+    loadPositions();
+  }, []);
+
+  async function handleAdd() {
     const u = parseFloat(units);
     const p = parseFloat(avgBuyPrice);
     if (!ticker || isNaN(u) || u <= 0 || isNaN(p) || p <= 0) return;
     const etf = MOCK_ETFS.find((e) => e.ticker === ticker);
-    const newPos: Position = {
-      id: Date.now().toString(),
-      ticker,
-      etfName: etf?.name ?? ticker,
-      units: u,
-      avgBuyPrice: p,
-      buyDate,
-    };
-    save([...positions, newPos]);
-    setUnits("");
-    setAvgBuyPrice("");
+    setSaving(true);
+    setError(null);
+    try {
+      const newPos = await api.portfolio.add(USER_ID, {
+        etf_isin: etf?.isin ?? ticker,
+        etf_ticker: ticker,
+        shares: u,
+        buy_price_eur: p,
+        buy_date: buyDate,
+      });
+      setPositions((prev) => [...prev, newPos]);
+      setUnits("");
+      setAvgBuyPrice("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Positie toevoegen mislukt");
+    } finally {
+      setSaving(false);
+    }
   }
 
-  function handleRemove(id: string) {
-    save(positions.filter((p) => p.id !== id));
+  async function handleRemove(id: string) {
+    setError(null);
+    try {
+      await api.portfolio.remove(USER_ID, id);
+      setPositions((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Positie verwijderen mislukt");
+    }
   }
 
-  // When ticker changes, prefill buy price with current price
   function handleTickerChange(t: string) {
     setTicker(t);
     const price = CURRENT_PRICES[t];
     if (price) setAvgBuyPrice(price.toString());
   }
 
-  // Calculations
-  const totalInvested = positions.reduce((sum, p) => sum + p.units * p.avgBuyPrice, 0);
+  const totalInvested = positions.reduce((sum, p) => sum + p.shares * p.buy_price_eur, 0);
   const totalCurrent = positions.reduce(
-    (sum, p) => sum + p.units * (CURRENT_PRICES[p.ticker] ?? p.avgBuyPrice),
+    (sum, p) => sum + p.shares * (CURRENT_PRICES[p.etf_ticker] ?? p.buy_price_eur),
     0,
   );
   const totalPnl = totalCurrent - totalInvested;
   const totalPnlPct = totalInvested > 0 ? (totalPnl / totalInvested) * 100 : 0;
 
   const pieData = positions.map((p) => ({
-    name: p.ticker,
-    value: p.units * (CURRENT_PRICES[p.ticker] ?? p.avgBuyPrice),
+    name: p.etf_ticker,
+    value: p.shares * (CURRENT_PRICES[p.etf_ticker] ?? p.buy_price_eur),
   }));
-
-  if (!mounted) return null;
 
   return (
     <div className="space-y-8">
@@ -132,6 +137,20 @@ export default function PortfolioPage() {
         ⚠️ De koersen op deze pagina zijn <strong>mock-waarden</strong> voor demonstratiedoeleinden.
         Raadpleeg je broker voor actuele koersen. Dit is geen financieel advies.
       </div>
+
+      {/* Error banner */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700 flex items-center justify-between gap-4">
+          <span>⚠️ {error}</span>
+          <button
+            onClick={loadPositions}
+            className="shrink-0 flex items-center gap-1 font-medium hover:text-red-900 transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Opnieuw proberen
+          </button>
+        </div>
+      )}
 
       {/* Summary bar */}
       <div className="grid sm:grid-cols-3 gap-4">
@@ -155,7 +174,12 @@ export default function PortfolioPage() {
       </div>
 
       {/* Positions table */}
-      {positions.length === 0 ? (
+      {loading ? (
+        <div className="card py-12 flex flex-col items-center gap-3 text-gray-400">
+          <RefreshCw className="w-6 h-6 animate-spin" />
+          <p className="text-sm">Portefeuille laden…</p>
+        </div>
+      ) : positions.length === 0 ? (
         <div className="card text-center py-10 space-y-3">
           <div className="text-4xl">📭</div>
           <p className="text-gray-500">Je hebt nog geen posities toegevoegd.</p>
@@ -179,22 +203,26 @@ export default function PortfolioPage() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {positions.map((pos) => {
-                const currentPrice = CURRENT_PRICES[pos.ticker] ?? pos.avgBuyPrice;
-                const value = pos.units * currentPrice;
-                const invested = pos.units * pos.avgBuyPrice;
+                const currentPrice = CURRENT_PRICES[pos.etf_ticker] ?? pos.buy_price_eur;
+                const value = pos.shares * currentPrice;
+                const invested = pos.shares * pos.buy_price_eur;
                 const pnl = value - invested;
-                const pnlPct = (pnl / invested) * 100;
+                const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+                const etfName =
+                  MOCK_ETFS.find((e) => e.ticker === pos.etf_ticker)?.name ?? pos.etf_ticker;
                 return (
                   <tr key={pos.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
-                      <span className="font-semibold text-gray-900">{pos.ticker}</span>
-                      <span className="block text-xs text-gray-400">{pos.etfName}</span>
+                      <span className="font-semibold text-gray-900">{pos.etf_ticker}</span>
+                      <span className="block text-xs text-gray-400">{etfName}</span>
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-700">{pos.units}</td>
-                    <td className="px-4 py-3 text-right text-gray-700">{fmt(pos.avgBuyPrice)}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{pos.shares}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{fmt(pos.buy_price_eur)}</td>
                     <td className="px-4 py-3 text-right text-gray-700">{fmt(currentPrice)}</td>
                     <td className="px-4 py-3 text-right font-medium text-gray-900">{fmt(value)}</td>
-                    <td className={`px-4 py-3 text-right font-medium ${pnl >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                    <td
+                      className={`px-4 py-3 text-right font-medium ${pnl >= 0 ? "text-emerald-600" : "text-red-600"}`}
+                    >
                       {pnl >= 0 ? "+" : ""}
                       {fmt(pnl)}
                       <span className="block text-xs">{fmtPct(pnlPct)}</span>
@@ -300,10 +328,15 @@ export default function PortfolioPage() {
         <div className="flex gap-3 pt-1">
           <button
             onClick={handleAdd}
-            className="btn-primary flex items-center gap-2"
+            disabled={saving}
+            className="btn-primary flex items-center gap-2 disabled:opacity-60"
           >
-            <PlusCircle className="w-4 h-4" />
-            Toevoegen
+            {saving ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <PlusCircle className="w-4 h-4" />
+            )}
+            {saving ? "Bezig…" : "Toevoegen"}
           </button>
           <Link href="/etfs" className="btn-secondary text-sm flex items-center gap-2">
             ETF&apos;s verkennen

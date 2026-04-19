@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
+from ..auth import get_optional_user
 from ..database import get_db
 from ..schemas import (
     OnboardingStartRequest,
@@ -25,6 +26,7 @@ router = APIRouter(prefix="/onboarding", tags=["onboarding"])
 async def onboarding_start(
     body: OnboardingStartRequest,
     db: AsyncSession = Depends(get_db),
+    current_user: str | None = Depends(get_optional_user),
 ) -> UserResponse:
     """
     Registreert een nieuwe gebruiker of geeft de bestaande terug.
@@ -43,6 +45,7 @@ async def onboarding_profile(
     user_id: uuid.UUID,
     body: OnboardingProfileRequest,
     db: AsyncSession = Depends(get_db),
+    current_user: str | None = Depends(get_optional_user),
 ) -> InvestorProfileResponse:
     """
     Slaat het investeerdersprofiel op na de onboarding wizard.
@@ -60,6 +63,7 @@ async def onboarding_profile(
 async def onboarding_summary(
     user_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    current_user: str | None = Depends(get_optional_user),
 ) -> OnboardingSummaryResponse:
     """
     Geeft een volledige samenvatting van gebruiker + profiel + risico-uitleg.
