@@ -8,7 +8,7 @@ from .events import (
     ProfielAangemaakt,
     event_bus,
 )
-from .etf import ETFEntity, ETFCategorie
+from .etf import ETFProduct, ETFCategory
 from .plan import PlanEntity
 from .value_objects import (
     BeleggingsProfiel,
@@ -23,8 +23,8 @@ __all__ = [
     "BeleggingsProfiel",
     "CheckInVoltooid",
     "DomainEventBus",
-    "ETFCategorie",
-    "ETFEntity",
+    "ETFCategory",
+    "ETFProduct",
     "ETFTicker",
     "GebruikerGeregistreerd",
     "Geld",

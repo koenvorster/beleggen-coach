@@ -1,0 +1,12 @@
+{
+  "id": "gedragscoach_2026-04-19T22-33-11-35389400-00",
+  "timestamp": "2026-04-19T22:33:11.353894+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Wat zijn de 3 principes van Van Droogenbroeck voor Belgische beginners?",
+  "agent_output": "Sorry, de AI-assistent is momenteel niet beschikbaar. Controleer of Ollama actief is op je systeem, of probeer het later opnieuw.",
+  "metadata": {
+    "agent": "gedragscoach",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

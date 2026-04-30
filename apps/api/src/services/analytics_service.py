@@ -215,3 +215,94 @@ async def _compute_metrics_live(tickers: list[str]) -> list[dict[str, Any]]:
         results.append(metric)
 
     return results
+
+
+async def run_daily_analytics_job(db: AsyncSession) -> None:
+    """Dagelijkse batch-job: fetch yfinance data, bereken metrics, Fear & Greed, platform stats.
+    
+    Args:
+        db: Database-sessie.
+    """
+    logger.info("daily_analytics_job_started")
+    
+    try:
+        # 1. Fetch historische prijzen voor top 5 ETFs
+        top_tickers = ["VWCE", "IWDA", "SXR8", "EMIM", "AGGH"]
+        
+        for ticker in top_tickers:
+            yf_ticker = TICKER_MAP.get(ticker, f"{ticker}.DE")
+            logger.info("fetching_yfinance", ticker=yf_ticker)
+            
+            def _fetch():
+                try:
+                    t = yf.Ticker(yf_ticker)
+                    hist = t.history(period="5y")
+                    return hist.reset_index().to_dict('records') if not hist.empty else []
+                except Exception as e:
+                    logger.warning("yfinance_error", ticker=yf_ticker, error=str(e))
+                    return []
+            
+            records = await asyncio.to_thread(_fetch)
+            
+            # Insert into etf_prices table (upsert)
+            for record in records:
+                datum = record.get('Date')
+                if datum:
+                    await db.execute(
+                        text("""
+                            INSERT INTO etf_prices (etf_isin, date, open, high, low, close, volume)
+                            VALUES (:isin, :date, :open, :high, :low, :close, :volume)
+                            ON CONFLICT (etf_isin, date) DO UPDATE SET
+                                close = EXCLUDED.close,
+                                volume = EXCLUDED.volume
+                        """),
+                        {
+                            "isin": ticker,
+                            "date": datum,
+                            "open": float(record.get('Open', 0)),
+                            "high": float(record.get('High', 0)),
+                            "low": float(record.get('Low', 0)),
+                            "close": float(record.get('Close', 0)),
+                            "volume": int(record.get('Volume', 0)),
+                        }
+                    )
+            
+            await db.commit()
+        
+        # 2. Berekenen van metrics uit fetched data
+        metrics = await _compute_metrics_live(top_tickers)
+        for m in metrics:
+            await db.execute(
+                text("""
+                    INSERT INTO etf_metrics (
+                        etf_isin, date,
+                        return_1m, return_3m, return_ytd, return_1y, return_3y, return_5y,
+                        volatility_1y, sharpe_ratio_1y, max_drawdown_1y
+                    ) VALUES (
+                        :isin, :date,
+                        :r1m, :r3m, :rytd, :r1y, :r3y, :r5y,
+                        :vol, :sharpe, :dd
+                    )
+                    ON CONFLICT (etf_isin, date) DO UPDATE SET
+                        return_1y = EXCLUDED.return_1y,
+                        volatility_1y = EXCLUDED.volatility_1y
+                """),
+                {
+                    "isin": m.get("ticker"),
+                    "date": datetime.now().date(),
+                    "r1m": m.get("return_1m"),
+                    "r3m": m.get("return_3m"),
+                    "rytd": m.get("return_ytd"),
+                    "r1y": m.get("return_1y"),
+                    "r3y": m.get("return_3y"),
+                    "r5y": m.get("return_5y"),
+                    "vol": m.get("volatility_1y"),
+                    "sharpe": m.get("sharpe_1y"),
+                    "dd": m.get("max_drawdown"),
+                }
+            )
+        
+        await db.commit()
+        logger.info("daily_analytics_job_completed")
+    except Exception as e:
+        logger.error("daily_analytics_job_error", error=str(e), exc_info=e)

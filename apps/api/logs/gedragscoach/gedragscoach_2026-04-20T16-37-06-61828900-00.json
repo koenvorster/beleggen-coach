@@ -1,0 +1,12 @@
+{
+  "id": "gedragscoach_2026-04-20T16-37-06-61828900-00",
+  "timestamp": "2026-04-20T16:37:06.618289+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Wat is een ETF?",
+  "agent_output": "ETF staat voor Exchange-Traded Fund. Het is als een soort aandelenfund dat je kunt kopen en verkopen in de beurs zoals speciale aandelen. Het werkt breed gelijkaardig, maar het heeft erop gericht om precies dezelfde dingen te bezitten als een index, zoals alle Amerikaanse aandelen of Europese aandelen.\n\nHet is mogelijk omdat beursbedrijven een contract met elkaar sluiten waarin ze hun onderliggende aandelen aan de ETF-deelnemers geven. Het betekent dus dat je direct in contact bent met het eigenlijke bezit, zonder middelaars zoals bij gewone fondsen. Dit maakt de kosten van een ETF meest scherp en er is geen extra investeringsrisico.",
+  "metadata": {
+    "agent": "gedragscoach",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

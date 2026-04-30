@@ -1,6 +1,6 @@
 name: plan_generator
 version: "1.0"
-model: mistral
+model: qwen2.5:3b
 temperature: 0.35
 max_tokens: 1500
 system_prompt_ref: prompts/system/plan_generator.txt

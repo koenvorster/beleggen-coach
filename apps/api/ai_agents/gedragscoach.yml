@@ -1,6 +1,6 @@
 name: gedragscoach
 version: "1.0"
-model: llama3
+model: qwen2.5:3b
 temperature: 0.6
 max_tokens: 800
 system_prompt_ref: prompts/system/gedragscoach.txt

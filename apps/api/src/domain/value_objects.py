@@ -31,6 +31,130 @@ class Geld(BaseModel):
         return f"€ {self.bedrag:.2f}"
 
 
+# ─── NEW: ETF-specific Value Objects ──────────────────────────────────────────
+
+
+class ISIN(BaseModel):
+    """Value Object voor ISIN (International Securities Identification Number).
+    
+    Immutable, alfanumeriek, 12 tekens: 2 letters (landcode) + 10 alfanumerieke.
+    Bijv. IE00B4L5Y983
+    """
+    code: str
+
+    model_config = {"frozen": True}
+
+    @field_validator("code")
+    @classmethod
+    def validate_isin(cls, v: str) -> str:
+        """Valideer ISIN formaat."""
+        v = v.strip().upper()
+        if len(v) != 12:
+            raise ValueError(f"ISIN moet 12 tekens zijn, kreeg {len(v)}: '{v}'")
+        if not v[:2].isalpha():
+            raise ValueError(f"ISIN moet beginnen met 2 letters: '{v}'")
+        if not v[2:].isalnum():
+            raise ValueError(f"ISIN tekens 3-12 moeten alfanumeriek zijn: '{v}'")
+        return v
+
+    def __str__(self) -> str:
+        return self.code
+
+    def __hash__(self) -> int:
+        return hash(self.code)
+
+
+class TER(BaseModel):
+    """Value Object voor Total Expense Ratio (jaarlijkse kosten als percentage).
+    
+    Immutable, decimaal tussen 0.0 en 1.0 (0% tot 100%).
+    Bijv. 0.0020 = 0.20%
+    """
+    value: Decimal = Field(..., ge=Decimal("0"), le=Decimal("1"))
+
+    model_config = {"frozen": True}
+
+    @field_validator("value", mode="before")
+    @classmethod
+    def normalize_ter(cls, v: object) -> Decimal:
+        """Zet om naar Decimal met 4 decimalen."""
+        result = Decimal(str(v))
+        if result < 0 or result > 1:
+            raise ValueError(f"TER moet tussen 0.0 en 1.0 liggen, kreeg {result}")
+        return result.quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+
+    def __str__(self) -> str:
+        """Geef TER als percentage (bijv. '0.20%' voor 0.002)."""
+        percentage = self.value * 100
+        return f"{percentage:.2f}%"
+
+    def __float__(self) -> float:
+        return float(self.value)
+
+
+class ETFScore(BaseModel):
+    """Value Object voor risicoscore van een ETF.
+    
+    Immutable, range 1-7 met beschrijvend label.
+    1 = Conservative, 4 = Moderate, 7 = Aggressive
+    """
+    level: int = Field(..., ge=1, le=7)
+    label: str
+
+    model_config = {"frozen": True}
+
+    @field_validator("label", mode="before")
+    @classmethod
+    def validate_label(cls, v: str) -> str:
+        """Valideer label is niet leeg."""
+        if not v or not v.strip():
+            raise ValueError("Label mag niet leeg zijn")
+        return v.strip()
+
+    @classmethod
+    def from_level(cls, level: int) -> "ETFScore":
+        """Factory method: create ETFScore van risk level (1-7)."""
+        labels = {
+            1: "Conservative",
+            2: "Conservative-Moderate",
+            3: "Moderate",
+            4: "Moderate",
+            5: "Moderate-Aggressive",
+            6: "Aggressive",
+            7: "Very Aggressive",
+        }
+        if level < 1 or level > 7:
+            raise ValueError(f"Risk level moet 1-7 zijn, kreeg {level}")
+        return cls(level=level, label=labels[level])
+
+    def __str__(self) -> str:
+        return f"Level {self.level} ({self.label})"
+
+
+class DividendYield(BaseModel):
+    """Value Object voor dividend yield als percentage.
+    
+    Immutable, decimaal tussen 0.0 en 100.0
+    Bijv. 2.5 = 2.5% jaarlijkse dividenduitkering
+    """
+    value: Decimal = Field(..., ge=Decimal("0"), le=Decimal("100"))
+
+    model_config = {"frozen": True}
+
+    @field_validator("value", mode="before")
+    @classmethod
+    def normalize_yield(cls, v: object) -> Decimal:
+        """Zet om naar Decimal met 2 decimalen."""
+        result = Decimal(str(v))
+        return result.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    def __str__(self) -> str:
+        return f"{self.value}%"
+
+    def __float__(self) -> float:
+        return float(self.value)
+
+
 RisicoNiveau = Literal["laag", "matig", "hoog"]
 Horizon = Literal["kort", "middel", "lang"]  # <5j, 5-15j, >15j
 
@@ -73,28 +197,6 @@ class BeleggingsProfiel(BaseModel):
         else:
             waarde = maand * ((((1 + r) ** n) - 1) / r)
         return Geld(bedrag=waarde)
-
-
-class ISIN(BaseModel):
-    """Value Object voor een ISIN-code (International Securities Identification Number)."""
-    code: str
-
-    model_config = {"frozen": True}
-
-    @field_validator("code")
-    @classmethod
-    def valideer_isin(cls, v: str) -> str:
-        v = v.strip().upper()
-        if len(v) != 12:
-            raise ValueError(f"ISIN moet 12 tekens zijn, kreeg {len(v)}: '{v}'")
-        if not v[:2].isalpha():
-            raise ValueError(f"ISIN moet beginnen met 2 letters (landcode): '{v}'")
-        if not v[2:].isalnum():
-            raise ValueError(f"ISIN tekens 3-12 moeten alfanumeriek zijn: '{v}'")
-        return v
-
-    def __str__(self) -> str:
-        return self.code
 
 
 class ETFTicker(BaseModel):

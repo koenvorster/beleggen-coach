@@ -187,6 +187,11 @@ describe("Onboarding wizard", () => {
   // ── Volledig doorlopen ──────────────────────────────────────────────────────
 
   describe("Volledig doorlopen → opslaan → redirect", () => {
+    beforeEach(() => {
+      // Bypass Keycloak middleware zodat /dashboard bereikbaar is tijdens tests
+      cy.authBypass();
+    });
+
     it("voltooit alle stappen en redirect naar /dashboard", () => {
       cy.visit("/onboarding");
 

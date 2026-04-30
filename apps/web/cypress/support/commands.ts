@@ -12,6 +12,14 @@ declare global {
   namespace Cypress {
     interface Chainable {
       /**
+       * Zet een auth-bypass cookie zodat de Next.js middleware beschermde
+       * routes doorlaat zonder Keycloak-sessie. Enkel voor E2E-tests in dev.
+       *
+       * @example cy.authBypass()
+       */
+      authBypass(): Chainable<void>;
+
+      /**
        * Stub the NextAuth session endpoint so client-side useSession() hooks
        * see a valid authenticated user.
        *
@@ -59,6 +67,20 @@ declare global {
 }
 
 // ─── Custom command implementations ──────────────────────────────────────────
+
+/**
+ * Zet een auth-bypass cookie zodat de Next.js middleware beschermde routes
+ * doorlaat zonder Keycloak-sessie. Enkel voor E2E-tests in dev.
+ */
+Cypress.Commands.add("authBypass", () => {
+  const token =
+    Cypress.env("E2E_BYPASS_TOKEN") ?? "cypress-dev-e2e-bypass-2026";
+  cy.setCookie("e2e_auth_bypass", token, {
+    httpOnly: false,
+    secure: false,
+    path: "/",
+  });
+});
 
 /**
  * Stub NextAuth v5 session endpoint so client-side auth hooks resolve with a

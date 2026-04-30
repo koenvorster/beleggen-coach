@@ -1,0 +1,12 @@
+{
+  "id": "gedragscoach_2026-04-19T22-44-09-34257300-00",
+  "timestamp": "2026-04-19T22:44:09.342573+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Wat is een ETF?",
+  "agent_output": "ETF staat voor \"Exchange Traded Fund\". Het is als een soort mutual fund die je kunt kooppen en verkopen op de beurs. Het werkt als een index, maar heeft transacties door je kan het aandeel direct kopen of verkopen zoals in een beurstransactie. Het is gemiddeld minder duurzaam dan een mutuelle, maar is ook niet altijd zo goed gerangschikt als actief investeren. Het belangrijkste is dat je er via de beurs kunt mee omgaan.",
+  "metadata": {
+    "agent": "gedragscoach",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

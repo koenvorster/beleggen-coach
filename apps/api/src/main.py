@@ -17,6 +17,7 @@ from .routers.portfolio import router as portfolio_router
 from .routers.chat_memory import router as chat_memory_router
 from .routers.market_data import router as market_data_router
 from .routers.analytics import router as analytics_router
+from .scheduler import init_scheduler, shutdown_scheduler
 
 logger = structlog.get_logger(__name__)
 
@@ -38,8 +39,13 @@ async def lifespan(app: FastAPI):
     else:
         logger.warning("ollama_unavailable", url=settings.ollama_base_url)
 
+    # Start scheduler
+    await init_scheduler()
+
     yield
 
+    # Shutdown scheduler
+    await shutdown_scheduler()
     logger.info("app_shutdown")
 
 

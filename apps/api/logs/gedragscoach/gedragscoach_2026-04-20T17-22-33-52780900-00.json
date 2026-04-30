@@ -1,0 +1,12 @@
+{
+  "id": "gedragscoach_2026-04-20T17-22-33-52780900-00",
+  "timestamp": "2026-04-20T17:22:33.527809+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Wat is een goede maandelijkse inleg?",
+  "agent_output": "Een goed maandelig wordt afhankelijk van je financiële situatie en doelen. Je hebt al gezegd dat je €200 per maandje budgetstrijdt, dus ik zou deze bepaalde vrije inkomen als een goede basis zien voor je inlegbedrag. \n\nMet €200 per maandig kun je in de meest gemakkelijke en eenvoudige investeringen zoals brede eurogenoeste ETF's opbouwen. Deze worden algevaard om te besteden, hebben relatief lage kosten (zoals Xtrackers' SXR8 met een TER van 0.15%), en je kunt ze gemakkelijk bijwerken of veranderen als je meer geld krijgt.\n\nZelfs als je niet direct in de beurs wilt investeren, kun je €200 per maandig in een spaarrekening plaatsen, wat onafhankelijk van alle andere doelen en doelstellingen kan blijven. Als je erachter komt dat je meer geld hebt, zou je het makkelijker kunnen doen om dit extra geld ook voor beleggingsdoeleinden te gebruiken.\n\nZorg ervoor dat je de long-termperspectie kent van deze investering en houd rekening met eventuele belastingimplicaties. Als je nog meer financiële doelen hebt, kan het helpen om de inzet tussen spaarrekeningen, pensioensparen, beleggingen en andere doeleinden te verdeelven.",
+  "metadata": {
+    "agent": "gedragscoach",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

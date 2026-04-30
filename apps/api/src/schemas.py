@@ -171,14 +171,16 @@ class ETFCreate(BaseModel):
 
 
 class ETFResponse(BaseModel):
-    """Schema voor ETF-response."""
+    """Schema voor ETF-response (DTO van ETFProduct aggregate)."""
 
     isin: str
     name: str
     description: Optional[str]
     category: str
-    ter: float
-    risk_level: int
+    ter: float  # weergegeven als float in API
+    risk_level: int  # 1-7
+    risk_label: str  # "Conservative", "Moderate", etc.
+    dividend_yield: float  # weergegeven als float in API
     currency: str
     benchmark: Optional[str]
     fund_size_m: Optional[float]
@@ -191,6 +193,25 @@ class ETFResponse(BaseModel):
     domicile: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ETFDetailResponse(ETFResponse):
+    """Schema voor gedetailleerde ETF-response met vergelijkbare ETFs."""
+    similar_etfs: list[ETFResponse] = []
+
+
+class ListETFsResponse(BaseModel):
+    """Schema voor gepagineerde ETF-lijstresponse met facetten."""
+    
+    etfs: list[ETFResponse]
+    count: int  # Aantal in deze pagina
+    offset: int  # Paginering offset
+    limit: int  # Paginering limit
+    total: int  # Totaal aantal zonder paginering
+    facets: dict  # {"categories": [...], "risk_levels": [...]}
+    
+    model_config = ConfigDict(from_attributes=True)
+
 
 
 # ─── Plan (update) ────────────────────────────────────────────────────────────

@@ -1,0 +1,12 @@
+{
+  "id": "gedragscoach_2026-04-19T22-50-05-77892200-00",
+  "timestamp": "2026-04-19T22:50:05.778922+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Wat is een ETF?",
+  "agent_output": "ETF staat voor Exchange-Traded Fund. Het is een type fonds dat zich aan het beursmarkt heeft vastgelegd en daardoor kan worden gekocht en verkocht zoals aandelen. Het doel van een ETF is om de kansen van een specifiek index, of een geselecteerde groep van aandelen, te volgen in de hoop dat hij hetzelfde rendement zal hebben.\n\nEen ETF bevat meestig aandelen die zijn gekozen om het gewicht van het totale portfolio in lijn te houden met het gewicht van de index of geselecteerde groep. Dit wordt \"replicatie\" genoemd. \n\nZelfs als je geen directe aandelenwisseling hebt, kan je een ETF kopen of verkopen op de beurs en deze zal dan ook hetzelfde rendement hebben als het index dat hij volgt. Het verschil is echter dat er soms \"tracking error\" bestaat: de verhoudingen van de aandelen in een ETF kunnen niet altijd perfect overeenkomen met die van het index.\n\nDus, bijna net zo handelbaar als Aandelen maar volgens een specifieke Index en dus ook met dezelfde risico's. Het is een veiligere manier om bepaalde Kansgeld-aandelen te investeren dan direct in de Index zelf.",
+  "metadata": {
+    "agent": "gedragscoach",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

@@ -1,0 +1,12 @@
+{
+  "id": "gedragscoach_2026-04-19T22-42-08-53815500-00",
+  "timestamp": "2026-04-19T22:42:08.538155+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Wat is een ETF en waarom is het goed voor beginners?",
+  "agent_output": "ETF's (Exchange-Traded Funds) zijn financiële instrumenten die naar indexen worden gecorrigeerd. Ze zijn veel vergelijkbaar met mutual funds, maar kunnen tevens aan de beurs gebracht worden. Dit betekent dat je ze direct kunt kopen of verkopen en je kan jouw posities in thema's zoals economische sectoren, landen, of regio's aanpassen.\n\nEen van de grootste voordelen van ETF's voor beginners is hun eenvoudige structuren. Ze zijn gerouteerd op basis van een specifieke index, waardoor je direct het rendement van dat index kunt beheren. Het betekent dus dat je geen enkele aandelen expertise nodig hebt.\n\nBijna elk groot financieel bedrijf heeft een portfolio van verschillende ETF's, wat weetenschappelijke onderzoek toewijst aan de structuur van de markt die gebruikt wordt om de ETF's te bouwen. Dit betekent dat je directe beleggingsruimte hebt in de beste aandelen of indices zonder direct financieel expertise nodig te hebben.\n\nOver enkele andere voordelen voor beginners:\n- **Eenvoudig**: Eenvoudige investeringen maken het makkelijker om een lange termijn beleggingsstrategie op te stellen.\n- **Transparantie**: ETF's zijn meest transparant, want je kunt direct de aandelen zien waarin een specifieke ETF investeert. Dit maakt het gemakkelijker om inzicht te krijgen in de beleggingsstrategie van je portfolio.\n- **Fiscale gunstigheid**: Voor beginners is het vaak fiscaal gunstiger om divisies van vreemde landen of regio's te beheren via ETF's. Dit komt doordat er minder dividende lekkage (wat betekent dat je minder belasting betaalt) op het lager eind wordt.\n\nDus, omdat ze makkelijker te begrijpen en gerouteerd zijn naar indexen, zijn ze een geweldige startpunt voor beginners die zichzelf willen beleggen.",
+  "metadata": {
+    "agent": "gedragscoach",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

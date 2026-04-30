@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import ETFDashboardClient from "./ETFDashboardClient";
+import ETFHeatmapClient from "./ETFHeatmapClient";
 
 export const metadata: Metadata = {
-  title: "ETF Performance Dashboard — BeleggenCoach",
+  title: "ETF Performance Heatmap — BeleggenCoach",
   description:
-    "Bekijk en vergelijk de prestaties van populaire ETFs op rendement, volatiliteit en risico.",
+    "Interactieve heatmap van ETF returns, volatiliteit, Sharpe ratio en maximum drawdown.",
 };
 
 export default function ETFAnalyticsPage() {
-  return <ETFDashboardClient />;
+  return <ETFHeatmapClient />;
 }

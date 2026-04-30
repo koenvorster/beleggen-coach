@@ -58,6 +58,58 @@ export interface BackendETF {
   description: string;
 }
 
+/** Ruwe ETF-respons van de backend (velden kunnen afwijken van BackendETF interface). */
+interface RawBackendETF {
+  isin: string;
+  name: string;
+  category: string;
+  ter: number;
+  risk_level: number;
+  risk_label: string;
+  dividend_yield: number;
+  is_accumulating: boolean;
+  fund_size_m?: number;
+  ytd_return?: number | null;
+  one_year_return?: number | null;
+  three_year_return?: number | null;
+  inception_date?: string | null;
+  replication_method: string;
+  domicile: string;
+  currency: string;
+  benchmark?: string | null;
+  description?: string;
+}
+
+/** Mapt backend lowercase categorieën naar display-namen. */
+const CATEGORIE_DISPLAY: Record<string, string> = {
+  equity: "Aandelen",
+  bond: "Obligaties",
+  mixed: "Gemengd",
+  "real estate": "Vastgoed",
+  "real_estate": "Vastgoed",
+  commodity: "Grondstoffen",
+};
+
+/** Normaliseert een ruwe backend ETF naar de BackendETF interface. */
+function normalizeETF(raw: RawBackendETF): BackendETF {
+  const categorie =
+    CATEGORIE_DISPLAY[raw.category.toLowerCase()] ??
+    raw.category.charAt(0).toUpperCase() + raw.category.slice(1);
+  return {
+    isin: raw.isin,
+    ticker: raw.isin.substring(2, 6),
+    naam: raw.name ?? "",
+    categorie,
+    regio: "Wereld",
+    expense_ratio: raw.ter,
+    aum_miljard_eur: raw.fund_size_m ?? 0,
+    accumulating: raw.is_accumulating,
+    volatility_3y: 0,
+    beginner_score: 50,
+    description: raw.description ?? "",
+  };
+}
+
 /** Standaard omhullende response van de backend. */
 export interface ApiResponse<T> {
   success: boolean;
@@ -241,14 +293,13 @@ export const api = {
       limit?: number;
     }): Promise<BackendETF[]> => {
       const qs = new URLSearchParams();
-      if (params?.categorie) qs.set("categorie", params.categorie);
-      if (params?.regio) qs.set("regio", params.regio);
+      if (params?.categorie) qs.set("category", params.categorie);
       if (params?.max_ter !== undefined) qs.set("max_ter", String(params.max_ter));
       if (params?.limit !== undefined) qs.set("limit", String(params.limit));
       const query = qs.toString() ? `?${qs.toString()}` : "";
-      return apiFetch<ApiResponse<{ count: number; etfs: BackendETF[] }>>(
+      return apiFetch<{ etfs: RawBackendETF[]; count: number; total: number; facets: unknown }>(
         `/etfs${query}`
-      ).then((r) => r.data?.etfs ?? []);
+      ).then((r) => (r.etfs ?? []).map(normalizeETF));
     },
 
     /** Haal één ETF op via ISIN. */

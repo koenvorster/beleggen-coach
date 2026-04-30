@@ -35,14 +35,17 @@ export default function ETFListClient({
   const filtered = etfs.filter((etf) => {
     if (!search) return true;
     const q = search.toLowerCase();
-    return etf.ticker.toLowerCase().includes(q) || etf.naam.toLowerCase().includes(q);
+    return (
+      etf.ticker.toLowerCase().includes(q) ||
+      (etf.naam ?? "").toLowerCase().includes(q)
+    );
   });
 
   const handleCategoryChange = (cat: string) => {
-    const params = new URLSearchParams();
-    if (cat !== "Alle") params.set("categorie", cat);
-    if (maxTerParam) params.set("max_ter", maxTerParam);
-    const qs = params.toString();
+    const parts: string[] = [];
+    if (cat !== "Alle") parts.push(`categorie=${encodeURIComponent(cat)}`);
+    if (maxTerParam) parts.push(`max_ter=${encodeURIComponent(maxTerParam)}`);
+    const qs = parts.join("&");
     router.push(qs ? `/etfs?${qs}` : "/etfs");
   };
 

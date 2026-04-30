@@ -1,0 +1,12 @@
+{
+  "id": "leer_assistent_2026-04-19T22-44-23-49824500-00",
+  "timestamp": "2026-04-19T22:44:23.498245+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Geef een beleggingstip",
+  "agent_output": "Hier is een concrete beleggingstip gebaseerd op het profiel van Doel:\n\nDoel heeft pensioenopbouwens, maandlijks budget van €200 en een beleggingshorizont van 25 jaar. Hij zoekt naar een gematigd risicoprofiel.\n\nIk zou aan Doel suggestie maken om de volgende beleggingen te maken:\n\n1. **VWCE (Vanguard S&P 500 UCITS ETF)**: Dit is een fysiek replicerende ETF die de Amerikaanse aandelenmarkt reflecteert. Het heeft een risicoscore van 4/7 en een fondsgrootte van meer dan 1 miljard euro, wat betekent dat het stabiel en minder risico heeft op liquidatie.\n\n2. **IWDA (iShares MSCI World UCITS ETF)**: Dit is een fysiek replicerende ETF die de wereldmarkt reflecteert. Het heeft ook een risicoscore van 4/7, een fondsgrootte van meer dan 1 miljard euro en is gemiddeld elk jaar €50 miljoen aan aandelen bezig.\n\n3. **VWGH (Vanguard Global All Country UCITS ETF)**: Dit is een fysiek replicerende ETF die de wereldmarkt voor alle landen reflecteert. Het heeft een risicoscore van 4/7, een fondsgrootte van meer dan 1 miljard euro en is gemiddeld elk jaar €50 miljoon aan aandelen bezig.\n\nDeze beleggingen vormen een diversieke portfolio die Doel kan houden. Hij koopt deze ETFs in de EUR-genoteerde versie vanwege de wisselkoersrisico's, en omdat veel belastingvoordelen voor de Ierlandse (IE) of Luxemburgse (LU) gebaseerde ETFs niet toepasselijk zijn voor Doel.\n\nDeze beleggingen bieden diversificatie over verschillende landen, industries en markten. De fysiek replicerende karakter van deze ETF's garandeert een betere tracking naar de index dan synthetische ETF's. Dit is belangrijk om de kosten te minimiseren en het rendement maximaal te houden.\n\nHet is ook belangrijk om op lang termijn te blijven beleggen, dus Doel zou moeten kijken naar de long-term trend van deze beleggingen in plaats van zich te laten afleiden door korte marktdia's.",
+  "metadata": {
+    "agent": "leer_assistent",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

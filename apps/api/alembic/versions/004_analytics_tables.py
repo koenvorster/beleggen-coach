@@ -1,4 +1,4 @@
-"""004 — analytics tabellen aanmaken (ETF prijsdata, metrics, platform events).
+"""004 — analytics tabellen aanmaken (ETF prijsdata, metrics, Fear&Greed, platform stats).
 
 Revision ID: 004
 Revises: 003
@@ -15,60 +15,96 @@ depends_on = None
 
 
 def upgrade() -> None:
-    """Maak analytics tabellen aan: etf_prices, etf_metrics en platform_events."""
+    """Maak Fase 13 analytics tabellen aan."""
+    
+    # ETF dagelijkse koersen (yfinance historische data)
     op.execute("""
         CREATE TABLE IF NOT EXISTS etf_prices (
-            id BIGSERIAL,
-            ticker VARCHAR(10) NOT NULL,
-            datum DATE NOT NULL,
-            open NUMERIC(16,4),
-            high NUMERIC(16,4),
-            low NUMERIC(16,4),
-            close NUMERIC(16,4) NOT NULL,
-            volume BIGINT,
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            etf_isin VARCHAR(12) NOT NULL,
+            date DATE NOT NULL,
+            open NUMERIC(10,4) NOT NULL,
+            high NUMERIC(10,4) NOT NULL,
+            low NUMERIC(10,4) NOT NULL,
+            close NUMERIC(10,4) NOT NULL,
+            volume INTEGER NOT NULL,
             created_at TIMESTAMPTZ DEFAULT NOW(),
-            PRIMARY KEY (ticker, datum)
+            UNIQUE(etf_isin, date)
         )
     """)
     op.execute(
-        "CREATE INDEX IF NOT EXISTS idx_etf_prices_ticker_datum "
-        "ON etf_prices (ticker, datum DESC)"
+        "CREATE INDEX IF NOT EXISTS ix_etf_prices_etf_isin "
+        "ON etf_prices (etf_isin)"
+    )
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_etf_prices_date "
+        "ON etf_prices (date)"
     )
 
+    # ETF berekende metrics (returns, volatility, Sharpe, drawdown)
     op.execute("""
         CREATE TABLE IF NOT EXISTS etf_metrics (
-            ticker VARCHAR(10) PRIMARY KEY,
-            naam VARCHAR(255),
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            etf_isin VARCHAR(12) NOT NULL UNIQUE,
+            date DATE NOT NULL,
             return_1m NUMERIC(8,4),
             return_3m NUMERIC(8,4),
             return_ytd NUMERIC(8,4),
             return_1y NUMERIC(8,4),
             return_3y NUMERIC(8,4),
             return_5y NUMERIC(8,4),
-            volatility_1y NUMERIC(8,4),
-            sharpe_1y NUMERIC(8,4),
-            max_drawdown NUMERIC(8,4),
-            last_price NUMERIC(16,4),
+            volatility_1y NUMERIC(6,4),
+            volatility_3y NUMERIC(6,4),
+            max_drawdown_1y NUMERIC(6,4),
+            sharpe_ratio_1y NUMERIC(6,4),
             updated_at TIMESTAMPTZ DEFAULT NOW()
         )
     """)
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_etf_metrics_etf_isin "
+        "ON etf_metrics (etf_isin)"
+    )
 
+    # Fear & Greed Index (dagelijks)
     op.execute("""
-        CREATE TABLE IF NOT EXISTS platform_events (
-            id BIGSERIAL PRIMARY KEY,
-            event_type VARCHAR(50) NOT NULL,
-            event_data JSONB,
+        CREATE TABLE IF NOT EXISTS fear_greed_index (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            date DATE NOT NULL UNIQUE,
+            score INTEGER NOT NULL,
+            vix_level NUMERIC(6,2),
+            momentum NUMERIC(6,4),
             created_at TIMESTAMPTZ DEFAULT NOW()
         )
     """)
     op.execute(
-        "CREATE INDEX IF NOT EXISTS idx_platform_events_type "
-        "ON platform_events (event_type, created_at DESC)"
+        "CREATE INDEX IF NOT EXISTS ix_fear_greed_index_date "
+        "ON fear_greed_index (date)"
+    )
+
+    # Platform statistieken (anoniem, dagelijks snapshot)
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS platform_stats (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            date DATE NOT NULL UNIQUE,
+            total_users INTEGER NOT NULL,
+            active_users INTEGER NOT NULL,
+            avg_monthly_investment NUMERIC(10,2) NOT NULL,
+            avg_investment_horizon_years NUMERIC(5,2) NOT NULL,
+            avg_streak_days INTEGER NOT NULL,
+            top_etf_isins JSONB NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        )
+    """)
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_platform_stats_date "
+        "ON platform_stats (date)"
     )
 
 
 def downgrade() -> None:
-    """Verwijder analytics tabellen."""
-    op.execute("DROP TABLE IF EXISTS platform_events")
+    """Verwijder Fase 13 analytics tabellen."""
+    op.execute("DROP TABLE IF EXISTS platform_stats")
+    op.execute("DROP TABLE IF EXISTS fear_greed_index")
     op.execute("DROP TABLE IF EXISTS etf_metrics")
     op.execute("DROP TABLE IF EXISTS etf_prices")
+

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { TrendingUp, BookOpen, Lightbulb, ArrowRight, CalendarCheck } from "lucide-react";
+import { TrendingUp, BookOpen, Lightbulb, ArrowRight, CalendarCheck, Grid3x3 } from "lucide-react";
 import {
   loadProfile,
   calcProjectedValue,
@@ -12,6 +12,7 @@ import {
   type UserProfile,
 } from "@/lib/profile";
 import { api, toETFCardProps, type BackendETF } from "@/lib/api";
+import FearGreedWidget from "@/components/dashboard/FearGreedWidget";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("nl-BE", {
@@ -27,6 +28,51 @@ function getGreeting(): string {
   if (h < 18) return "Goedemiddag";
   return "Goedenavond";
 }
+
+interface NavCategory {
+  name: string;
+  items: Array<{
+    href: string;
+    emoji: string;
+    label: string;
+  }>;
+}
+
+const DASHBOARD_CATEGORIES: NavCategory[] = [
+  {
+    name: "Snel starten",
+    items: [
+      { href: "/etfs", emoji: "🔍", label: "ETF's ontdekken" },
+      { href: "/etfs/compare", emoji: "⚖️", label: "Vergelijken" },
+      { href: "/plan", emoji: "📈", label: "Mijn Plan" },
+      { href: "/portfolio", emoji: "💼", label: "Portfolio" },
+    ],
+  },
+  {
+    name: "Leren & Groeien",
+    items: [
+      { href: "/learn", emoji: "📚", label: "Leercentrum" },
+      { href: "/bronnen", emoji: "🔗", label: "Bronnen" },
+      { href: "/leren", emoji: "📖", label: "Leerpad" },
+    ],
+  },
+  {
+    name: "Analyseren",
+    items: [
+      { href: "/analytics/etfs", emoji: "📊", label: "ETF Analyse" },
+      { href: "/scenario", emoji: "🎯", label: "Scenario's" },
+      { href: "/fire", emoji: "🔥", label: "FIRE Calculator" },
+    ],
+  },
+  {
+    name: "Mijn portfolio",
+    items: [
+      { href: "/checkin", emoji: "✅", label: "Check-in" },
+      { href: "/chat", emoji: "🤖", label: "AI Coach" },
+      { href: "/markt", emoji: "📈", label: "Markt & Koersen" },
+    ],
+  },
+];
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<UserProfile | null | undefined>(undefined);
@@ -105,29 +151,36 @@ export default function DashboardPage() {
         <p className="text-gray-500 text-sm mt-1">Hier is een overzicht van jouw beleggingsplan.</p>
       </div>
 
-      {/* Quick nav tiles */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {[
-          { href: "/etfs", emoji: "🔍", label: "ETF's" },
-          { href: "/etfs/compare", emoji: "⚖️", label: "Vergelijk" },
-          { href: "/plan", emoji: "📈", label: "Mijn Plan" },
-          { href: "/portfolio", emoji: "💼", label: "Portfolio" },
-          { href: "/learn", emoji: "📚", label: "Leercentrum" },
-          { href: "/checkin", emoji: "📋", label: "Check-in" },
-          { href: "/chat", emoji: "💬", label: "AI Coach" },
-          { href: "/analytics", emoji: "📊", label: "Analyse" },
-          { href: "/bronnen", emoji: "🔗", label: "Bronnen" },
-        ].map(({ href, emoji, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className="card flex flex-col items-center gap-2 py-4 hover:border-primary-300 border border-transparent hover:shadow-md transition-all text-center"
-          >
-            <span className="text-2xl">{emoji}</span>
-            <span className="text-xs font-medium text-gray-700">{label}</span>
-          </Link>
+      {/* Categorieën Grid */}
+      <div className="space-y-6">
+        {DASHBOARD_CATEGORIES.map((category) => (
+          <div key={category.name}>
+            <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <Grid3x3 className="w-5 h-5 text-primary-600" />
+              {category.name}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {category.items.map(({ href, emoji, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="card flex flex-col items-center justify-center gap-3 py-5 px-3 hover:border-primary-300 border border-transparent hover:shadow-md hover:bg-primary-50 transition-all text-center group"
+                >
+                  <span className="text-3xl group-hover:scale-110 transition-transform">
+                    {emoji}
+                  </span>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-primary-600">
+                    {label}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
+
+      {/* Fear & Greed Widget */}
+      <FearGreedWidget />
 
       {/* Stats row */}
       <div className="grid sm:grid-cols-3 gap-4">

@@ -1,0 +1,12 @@
+{
+  "id": "leer_assistent_2026-04-19T22-50-19-89275100-00",
+  "timestamp": "2026-04-19T22:50:19.892751+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Geef een beleggingstip",
+  "agent_output": "Beter begon je misschien niet dan met een diversifiseerde portefeuille die de grote brede wereldwijde aandelen indruist, maar ook wat thematische investeringen. Hier is een aanbeveling:\n\n1. **XDWD** (Xtrackers MSCI World Dividend Opportunity UCITS ETF): Dit is een thema-ETF dat zich richt op dividend uitkopers van de wereld. Het geeft je toegang tot diversiteit en kan een passiefinkere bron van inkomen bieden.\n\n2. **IWDA** (iShares MSCI World UCITS ETF): Deze ETF geeft je toegang tot het S&P 500, wat een belangrijk en diversifiseerde index is voor de Amerikaanse economie.\n\n3. **VWCE** (Vanguard FTSE All-World ex-US UCITS ETF): Dit is een fysiek replicerende ETF dat wereldwijde aandelen in andere regio's biedt, zoals Europa, Japan en Azië. Het zorgt ervoor dat je niet alleen Amerikaanse risico's beheert.\n\n4. **SXR8** (iShares S&P 500 UCITS ETF): Deze is een fysiek replicerende ETF die de S&P 500 volgt, wat een belangrijk en diversifiseerde index in de Verenigde Stateen is.\n\nDit portfolio heeft een mix van thema-ETF's (XDWD en IWDA) en brede ETF's (VWCE en SXR8), wat je kan zien als een passief filosofie die ook een klein element van speculatie bevat. Je zou dit portfolio periodiek (bijvoorbeeld per jaar of 6 maanden) kunnen controleren om te kijken of de aandelen nog steeds de juiste thema's vertegenwoordigen.\n\nDe kosten voor deze portefeuille zijn relatief laag: tussen 0,04% en 0,12%, afhankelijk van het specifieke ETF. Je zou dit portfolio in een aparte beleggingsrekening kunnen leggen om je financiële transacties separat te kunnen volgen.\n\nEen pasgebouwd portfolio kan altijd aangepast worden aan je persoonlijke doelen, risicostrijkt en investeringsperiode. Als je de tijd hebt voor passief filosofie, is dit een goed begin!",
+  "metadata": {
+    "agent": "leer_assistent",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

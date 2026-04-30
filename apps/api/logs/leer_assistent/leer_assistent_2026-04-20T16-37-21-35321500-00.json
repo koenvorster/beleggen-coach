@@ -1,0 +1,12 @@
+{
+  "id": "leer_assistent_2026-04-20T16-37-21-35321500-00",
+  "timestamp": "2026-04-20T16:37:21.353215+00:00",
+  "prompt_version": "1.0",
+  "user_input": "Geef een beleggingstip",
+  "agent_output": "Hier is een concrete beleggingstip op basis van het profiel dat je me hebt gegeven:\n\nJe kunt beginnen met een diversifiseerde portefeuille die bestaat uit de 3 thematische ETF's die ik je eerder aanbeveld heb. Dit zorgt ervoor dat je niet al te veel risico neemt, maar ook geen grote winst mogelijk maakt.\n\n1. **Volkswagen (VWCE) - Europese Industrieënindex**: Deze portefeuille wordt gezien als een goede representatie van de economie van Europa en zou 25% van je beleggingsportefeuille kunnen delen.\n   \n2. **Invesco S&P 500 ETF (SXR8) - Amerikaanse Industrieënindex**: Dit is een goed voorbeeld van hoe je kunt diversifiseren door de Europese index te combineren met een Amerikaanse index. Het zou 25% van je portefeuille delen.\n   \n3. **Vanguard Global Aggregate Bond ETF (AGGH) - Globale Obligatiesindex**: Dit is een bondetje, wat een diversificatiepunt biedt naar andere markten en vormt de rest van je beleggingsportefeuille.\n\nDit zou een portefeuille zijn met een 25% divisie, 25% divisie en 50% diversiteit. Het is een gemiddeld risicorelatief systeem dat het inzicht biedt in de verschillende markten terwijl het ook diversiteit brengt.\n\nBovendien zou je erop kunnen letten om regelmatig (bijvoorbeeld 1-2 keer per jaar) te kopen met een bepaalde hoeveel. Dit wordt bekend als \"Diversificatie Periodiek Inhoudelen\" of DCA, wat betekent dat je niet alleen één mal per jaar belegt, maar ook regelmatig in verschillende periodes.\n\nBij elke stap van de diversificatie en het inhoudelen zorg je ervoor dat je blijft inzicht houdt van hoe je portefeuille zich beweegt. Als je 50 euro per maandje wilt beleggen, zou dit betekenen dat je elk jaar €1.800 kunt beleggen.\n  \nDus, de basis van je beleggingstip is: Start met deze diversifieerde portfolio-structuur en voegel het aan door periodiek te inhoudelen via DCA.",
+  "metadata": {
+    "agent": "leer_assistent",
+    "user_id": "00000000-0000-0000-0000-000000000000"
+  },
+  "feedback": null
+}

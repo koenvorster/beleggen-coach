@@ -104,3 +104,86 @@ class PortfolioPosition(Base):
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user: Mapped["User"] = relationship("User", back_populates="positions")
+
+
+# ─── FASE 13: Analytics Database ────────────────────────────────────────────
+
+class ETFPrice(Base):
+    """Dagelijkse ETF-koersen (yfinance historische data)."""
+    __tablename__ = "etf_prices"
+    
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    etf_isin: Mapped[str] = mapped_column(String(12), nullable=False, index=True)
+    date: Mapped[datetime.date] = mapped_column(Date, nullable=False, index=True)
+    open: Mapped[float] = mapped_column(Numeric(10, 4), nullable=False)
+    high: Mapped[float] = mapped_column(Numeric(10, 4), nullable=False)
+    low: Mapped[float] = mapped_column(Numeric(10, 4), nullable=False)
+    close: Mapped[float] = mapped_column(Numeric(10, 4), nullable=False)
+    volume: Mapped[int] = mapped_column(Integer, nullable=False)
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    
+    __table_args__ = (UniqueConstraint("etf_isin", "date", name="uq_etf_price_date"),)
+
+
+class ETFMetrics(Base):
+    """Berekende performance metrics (1M, 3M, YTD, 1Y, 3Y, 5Y)."""
+    __tablename__ = "etf_metrics"
+    
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    etf_isin: Mapped[str] = mapped_column(String(12), nullable=False, unique=True, index=True)
+    date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
+    
+    # Returns (%)
+    return_1m: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
+    return_3m: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
+    return_ytd: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
+    return_1y: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
+    return_3y: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
+    return_5y: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
+    
+    # Risk metrics
+    volatility_1y: Mapped[float | None] = mapped_column(Numeric(6, 4), nullable=True)
+    volatility_3y: Mapped[float | None] = mapped_column(Numeric(6, 4), nullable=True)
+    max_drawdown_1y: Mapped[float | None] = mapped_column(Numeric(6, 4), nullable=True)
+    sharpe_ratio_1y: Mapped[float | None] = mapped_column(Numeric(6, 4), nullable=True)
+    
+    updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class FearGreedIndex(Base):
+    """Fear & Greed Index (dagelijks: berekend uit VIX + momentum)."""
+    __tablename__ = "fear_greed_index"
+    
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    date: Mapped[datetime.date] = mapped_column(Date, nullable=False, unique=True, index=True)
+    
+    # Score: 0 = extreme fear, 50 = neutral, 100 = extreme greed
+    score: Mapped[int] = mapped_column(Integer, nullable=False)
+    
+    # Components
+    vix_level: Mapped[float | None] = mapped_column(Numeric(6, 2), nullable=True)
+    momentum: Mapped[float | None] = mapped_column(Numeric(6, 4), nullable=True)
+    
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class PlatformStats(Base):
+    """Anonieme platform statistieken (dagelijks snapshot)."""
+    __tablename__ = "platform_stats"
+    
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    date: Mapped[datetime.date] = mapped_column(Date, nullable=False, unique=True, index=True)
+    
+    # User stats
+    total_users: Mapped[int] = mapped_column(Integer, nullable=False)
+    active_users: Mapped[int] = mapped_column(Integer, nullable=False)
+    
+    # Behavior stats
+    avg_monthly_investment: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
+    avg_investment_horizon_years: Mapped[float] = mapped_column(Numeric(5, 2), nullable=False)
+    avg_streak_days: Mapped[int] = mapped_column(Integer, nullable=False)
+    
+    # Popular ETFs (top 5 ISINs as JSON)
+    top_etf_isins: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())

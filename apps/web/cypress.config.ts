@@ -12,6 +12,7 @@ export default defineConfig({
     defaultCommandTimeout: 8000,
     env: {
       apiUrl: "http://localhost:8000",
+      E2E_BYPASS_TOKEN: "cypress-dev-e2e-bypass-2026",
     },
   },
 });
